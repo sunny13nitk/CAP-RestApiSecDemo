@@ -1,0 +1,15 @@
+applications:
+# The sample application.
+- name: restapidemo
+  instances: 1 
+  memory: 500M
+  routes:
+    - route: restdemo.cfapps.eu10-004.hana.ondemand.com
+  path: srv/target/restapi-sec-demo-exec.jar
+  buildpacks:
+    - java_buildpack
+  env:
+    JBP_CONFIG_OPEN_JDK_JRE: '{jre: { version: 17.0.+ }}'
+    IAS_XSUAA_XCHANGE_ENABLED: true
+  services:    
+    - srv-cloud-destService
