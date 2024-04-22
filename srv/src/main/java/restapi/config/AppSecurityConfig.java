@@ -44,7 +44,8 @@ public class AppSecurityConfig
         http
                .authorizeHttpRequests(authz ->
                            authz
-                                .requestMatchers("/authorize/").permitAll()
+                                .requestMatchers("/authorize/**").permitAll()
+                                .requestMatchers("/logs/").hasAuthority("RESTREAD")
                                 .anyRequest().denyAll())
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .oauth2ResourceServer(oauth2 -> oauth2

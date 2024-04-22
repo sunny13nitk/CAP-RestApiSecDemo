@@ -26,7 +26,9 @@ public class AuthController
 
     private final String desName = "BTP_SVC_INT";
 
-    @GetMapping("/")
+    private final String desNameOAuthCred = "REST_API_AUTH_CODE";
+
+    @GetMapping("/basic")
     public ResponseEntity<Map<String, String>> accessPublicEndpoint()
     {
 
@@ -36,6 +38,32 @@ public class AuthController
         if (StringUtils.hasText(desName))
         {
             log.info("Scanning for Destination : " + desName);
+            log.info("Destination Not bound. Invoking Destination Service..");
+            try
+            {
+                desProps = getDestinationDetails(desName);
+            }
+            catch (Exception e)
+            {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
+
+        }
+        return new ResponseEntity<>(desProps, HttpStatus.OK);
+    }
+
+
+    @GetMapping("/oAuth2")
+    public ResponseEntity<Map<String, String>> accessOAuth2Endpoint()
+    {
+
+        log.info("Welcome to public zone");
+        Map<String, String> desProps = null;
+
+        if (StringUtils.hasText(desNameOAuthCred))
+        {
+            log.info("Scanning for Destination : " + desNameOAuthCred);
             log.info("Destination Not bound. Invoking Destination Service..");
             try
             {
