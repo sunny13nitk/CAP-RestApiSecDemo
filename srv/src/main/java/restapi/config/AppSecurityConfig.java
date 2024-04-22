@@ -42,7 +42,7 @@ public class AppSecurityConfig
         http
                .authorizeHttpRequests(authz ->
                            authz
-                                .requestMatchers("/authorize/*").permitAll()
+                                .requestMatchers("/token").permitAll()
                                 .anyRequest().denyAll())
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .oauth2ResourceServer(oauth2 -> oauth2
