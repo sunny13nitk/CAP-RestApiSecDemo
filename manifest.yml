@@ -13,4 +13,3 @@ applications:
     IAS_XSUAA_XCHANGE_ENABLED: true
   services:    
     - srv-cloud-destService
-    - restapi-xsuaa
