@@ -28,6 +28,7 @@ import com.sap.cloud.security.token.TokenClaims;
 @Configuration
 @EnableWebSecurity()
 @EnableMethodSecurity(securedEnabled = true, jsr250Enabled = true)
+@Order(1) // needs to have higher priority than CAP security config
 @PropertySource(factory = IdentityServicesPropertySourceFactory.class, ignoreResourceNotFound = true, value =
 { "" })
 public class AppSecurityConfig
