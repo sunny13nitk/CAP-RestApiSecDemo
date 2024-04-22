@@ -2,9 +2,11 @@ package restapi.controller;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.StringUtils;
@@ -14,6 +16,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.sap.cloud.sdk.cloudplatform.connectivity.Destination;
 import com.sap.cloud.sdk.cloudplatform.connectivity.DestinationAccessor;
+import com.sap.cloud.sdk.cloudplatform.connectivity.DestinationProperties;
+import com.sap.cloud.sdk.cloudplatform.connectivity.DestinationService;
 import com.sap.cloud.sdk.cloudplatform.connectivity.exception.DestinationAccessException;
 
 import lombok.extern.slf4j.Slf4j;
@@ -53,13 +57,12 @@ public class AuthController
         return new ResponseEntity<>(desProps, HttpStatus.OK);
     }
 
-
     @GetMapping("/oAuth2")
     public ResponseEntity<Map<String, String>> accessOAuth2Endpoint()
     {
 
         log.info("Welcome to public zone");
-        Map<String, String> desProps = null;
+        Map<String, String> desProps = new HashMap<String, String>();
 
         if (StringUtils.hasText(desNameOAuthCred))
         {
@@ -67,7 +70,22 @@ public class AuthController
             log.info("Destination Not bound. Invoking Destination Service..");
             try
             {
-                desProps = getDestinationDetails(desNameOAuthCred);
+                var service = new DestinationService();
+
+                Collection<DestinationProperties> allDestinationProperties = service.getAllDestinationProperties();
+                DestinationProperties individualProperties = service.getDestinationProperties(desNameOAuthCred);
+                if (individualProperties != null)
+                {
+                    if (CollectionUtils.isNotEmpty(allDestinationProperties))
+                    {
+
+                        individualProperties.getPropertyNames().forEach(p ->
+                        {
+                            desProps.put(p, individualProperties.get(p).toString());
+                        });
+                    }
+
+                }
             }
             catch (Exception e)
             {
