@@ -7,8 +7,8 @@ import org.springframework.core.annotation.Order;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
 import com.sap.cloud.security.spring.config.IdentityServicesPropertySourceFactory;
 
@@ -27,28 +27,30 @@ public class AppSecurityConfig
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception
     {
-        // // @formatter:off
-        // http
-        //        .authorizeHttpRequests(authz ->
-        //                    authz
-        //                         .requestMatchers("/authorize/").permitAll()
-        //                         .anyRequest().denyAll())
-        //         .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-        //         .oauth2ResourceServer(oauth2 -> oauth2
-        //                 .jwt(jwt -> jwt
-        //                         .jwtAuthenticationConverter(new MyCustomHybridTokenAuthenticationConverter()))); // Adjust the converter to represent your use case
-        //                                     // Use MyCustomHybridTokenAuthenticationConverter when IAS and XSUAA is used
-        //                                     // Use MyCustomIasTokenAuthenticationConverter when only IAS is used
-        // // @formatter:on
-        // return http.build();
+        // @formatter:off
+        http
+               .authorizeHttpRequests(authz ->
+                           authz
+                                .requestMatchers("/authorize/").permitAll()
+                                .anyRequest().denyAll())
+                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
+                // .oauth2ResourceServer(oauth2 -> oauth2
+                //         .jwt(jwt -> jwt
+                //                 .jwtAuthenticationConverter(new MyCustomHybridTokenAuthenticationConverter()))); // Adjust the converter to represent your use case
+                                            // Use MyCustomHybridTokenAuthenticationConverter when IAS and XSUAA is used
+                                            // Use MyCustomIasTokenAuthenticationConverter when only IAS is used
+        // @formatter:on
+        return http.build();
 
-        return http.securityMatcher(AntPathRequestMatcher.antMatcher("/authorize/")).csrf(c -> c.disable()) // don't
-                                                                                                           // insist on
-                                                                                                           // csrf
-                                                                                                           // tokens in
-                                                                                                           // put, post
-                                                                                                           // etc.
-                .authorizeHttpRequests(r -> r.anyRequest().permitAll()).build();
+        // return
+        // http.securityMatcher(AntPathRequestMatcher.antMatcher("/authorize/")).csrf(c
+        // -> c.disable()) // don't
+        // // insist on
+        // // csrf
+        // // tokens in
+        // // put, post
+        // // etc.
+        // .authorizeHttpRequests(r -> r.anyRequest().permitAll()).build();
     }
 
     /**
