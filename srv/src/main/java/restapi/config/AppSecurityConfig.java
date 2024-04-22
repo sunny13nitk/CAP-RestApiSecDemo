@@ -31,7 +31,7 @@ public class AppSecurityConfig
         // http
         //        .authorizeHttpRequests(authz ->
         //                    authz
-        //                         .requestMatchers("/token").permitAll()
+        //                         .requestMatchers("/authorize/").permitAll()
         //                         .anyRequest().denyAll())
         //         .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
         //         .oauth2ResourceServer(oauth2 -> oauth2
@@ -42,7 +42,7 @@ public class AppSecurityConfig
         // // @formatter:on
         // return http.build();
 
-        return http.securityMatcher(AntPathRequestMatcher.antMatcher("/public/**")).csrf(c -> c.disable()) // don't
+        return http.securityMatcher(AntPathRequestMatcher.antMatcher("/authorize/")).csrf(c -> c.disable()) // don't
                                                                                                            // insist on
                                                                                                            // csrf
                                                                                                            // tokens in
