@@ -67,7 +67,7 @@ public class AuthController
             log.info("Destination Not bound. Invoking Destination Service..");
             try
             {
-                desProps = getDestinationDetails(desName);
+                desProps = getDestinationDetails(desNameOAuthCred);
             }
             catch (Exception e)
             {
