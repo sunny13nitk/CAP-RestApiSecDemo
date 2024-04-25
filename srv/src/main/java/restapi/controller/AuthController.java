@@ -3,24 +3,14 @@ package restapi.controller;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
-import org.apache.http.Consts;
 import org.apache.http.Header;
 import org.apache.http.HttpResponse;
-import org.apache.http.NameValuePair;
-import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpGet;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.entity.ContentType;
-import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
-import org.apache.http.message.BasicNameValuePair;
-import org.json.JSONObject;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.StringUtils;
@@ -28,7 +18,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sap.cloud.sdk.cloudplatform.connectivity.Destination;
 import com.sap.cloud.sdk.cloudplatform.connectivity.DestinationAccessor;
 import com.sap.cloud.sdk.cloudplatform.connectivity.exception.DestinationAccessException;
@@ -191,6 +180,27 @@ public class AuthController
                     if (reqBody != null)
                     {
 
+                        log.info(reqBody.toString());
+
+                         // @formatter:off
+                        String params = Map.of(
+                                                CL_DestinationUtilities.GC_GrantType, apiObject.getClientId(),
+                                                CL_DestinationUtilities.GC_ClientCredentials,
+                                                CL_DestinationUtilities.GC_ClientID_Token,
+                                                reqBody.getClient_id(),
+                                                CL_DestinationUtilities.GC_ClientSecret_Token,
+                                                reqBody.getClient_secret())
+                                        .entrySet()
+                                        .stream()
+                                        .map(entry -> Stream.of(
+                                                URLEncoder.encode(entry.getKey(), StandardCharsets.UTF_8),
+                                                URLEncoder.encode(entry.getValue(), StandardCharsets.UTF_8))
+                                                .collect(Collectors.joining("="))
+                                        ).collect(Collectors.joining("&"));
+
+                    // @formatter:on
+                        log.info(params);
+
                         List<NameValuePair> formparams = new ArrayList<NameValuePair>();
                         formparams.add(new BasicNameValuePair(CL_DestinationUtilities.GC_GrantType,
                                 CL_DestinationUtilities.GC_ClientCredentials));
@@ -202,6 +212,8 @@ public class AuthController
                         httpClient = HttpClientBuilder.create().build();
 
                         HttpPost httpPost = new HttpPost(url);
+
+                        
                         // Set the request headers
                         httpPost.addHeader("Content-Type", "application/x-www-form-urlencoded");
                         httpPost.addHeader("Accept", "application/json");
@@ -211,7 +223,7 @@ public class AuthController
                         if (entity != null)
                         {
                             log.info("Entity Text in url encoded form.....");
-                            log.info(entity.getContent().toString());
+                            log.info(entity.getContent().);
                             httpPost.setEntity(entity);
 
                             // Fire the Url
