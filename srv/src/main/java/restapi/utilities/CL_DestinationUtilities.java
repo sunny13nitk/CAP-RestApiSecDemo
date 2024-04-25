@@ -13,7 +13,7 @@ import com.sap.cloud.sdk.cloudplatform.connectivity.DestinationProperties;
 import com.sap.cloud.sdk.cloudplatform.connectivity.DestinationService;
 
 import lombok.extern.slf4j.Slf4j;
-import restapi.pojos.TY_AccessCodeParams;
+import restapi.pojos.TY_ApplicationDetails;
 
 @Slf4j
 public class CL_DestinationUtilities
@@ -28,15 +28,15 @@ public class CL_DestinationUtilities
     public static final String GC_Header_Location = "location";
     public static final String GC_ClientCredentials = "client_credentials";
 
-    public static TY_AccessCodeParams getAccessCodeParams4OAuthDestination(String destination) throws Exception
+    public static TY_ApplicationDetails getAccessCodeParams4OAuthDestination(String destination) throws Exception
     {
-        TY_AccessCodeParams acCodeParms = null;
+        TY_ApplicationDetails acCodeParms = null;
 
         Map<String, String> desProps = getOAuth2DesProps(destination);
 
         if (desProps.size() > 0)
         {
-            acCodeParms = new TY_AccessCodeParams();
+            acCodeParms = new TY_ApplicationDetails();
             String tokenUrl = desProps.get(GC_tokenServiceURL);
             if (StringUtils.hasText(tokenUrl))
             {

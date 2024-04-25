@@ -28,7 +28,7 @@ import com.sap.cloud.sdk.cloudplatform.connectivity.DestinationAccessor;
 import com.sap.cloud.sdk.cloudplatform.connectivity.exception.DestinationAccessException;
 
 import lombok.extern.slf4j.Slf4j;
-import restapi.pojos.TY_AccessCodeParams;
+import restapi.pojos.TY_ApplicationDetails;
 import restapi.pojos.TY_BearerToken;
 import restapi.pojos.TY_TokenRequestBody;
 import restapi.utilities.CL_DestinationUtilities;
@@ -99,7 +99,7 @@ public class AuthController
         // Prepare Auth Code Url
         try
         {
-            TY_AccessCodeParams acCodeParams = CL_DestinationUtilities
+            TY_ApplicationDetails acCodeParams = CL_DestinationUtilities
                     .getAccessCodeParams4OAuthDestination(desNameOAuthCred);
             if (acCodeParams != null)
             {
@@ -162,7 +162,7 @@ public class AuthController
     @GetMapping("/bearerToken")
     public ResponseEntity<TY_BearerToken> getToken() throws IOException
     {
-        TY_AccessCodeParams acCodeParams;
+        TY_ApplicationDetails acCodeParams;
         TY_BearerToken bearer = null;
         CloseableHttpClient httpClient = null;
         try
@@ -190,6 +190,7 @@ public class AuthController
                     {
                         ObjectMapper objMapper = new ObjectMapper();
                         String requestBody = objMapper.writeValueAsString(reqBody);
+                        
 
                         StringEntity entity = new StringEntity(requestBody, ContentType.APPLICATION_JSON);
                         httpPost.setEntity(entity);
