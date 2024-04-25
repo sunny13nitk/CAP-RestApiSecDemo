@@ -197,6 +197,7 @@ public class AuthController
 
                         // Fire the Url
                         HttpResponse response = httpClient.execute(httpPost);
+                        log.info(response.toString());
                         // verify the valid error code first
                         int statusCode = response.getStatusLine().getStatusCode();
                         if (statusCode != HttpStatus.OK.value())
@@ -246,6 +247,10 @@ public class AuthController
             log.error("Error accessing Destination  " + desNameOAuthCred);
             log.error("Error Details :  " + e.getLocalizedMessage());
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+        finally
+        {
+            httpClient.close();
         }
 
         return new ResponseEntity<>(bearer, HttpStatus.OK);
