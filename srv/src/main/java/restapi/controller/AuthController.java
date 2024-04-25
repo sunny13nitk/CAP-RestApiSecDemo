@@ -1,5 +1,6 @@
 package restapi.controller;
 
+import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.HashMap;
@@ -83,10 +84,11 @@ public class AuthController
     }
 
     @GetMapping("/bearer")
-    public ResponseEntity<TY_BearerToken> getBearerToken()
+    public ResponseEntity<TY_BearerToken> getBearerToken() throws IOException
     {
         TY_BearerToken bearer = null;
         String authCode = null;
+        CloseableHttpClient httpClient = null;
 
         // Prepare Auth Code Url
         try
@@ -101,8 +103,9 @@ public class AuthController
                         + acCodeParams.getResponseType();
                 if (StringUtils.hasText(url))
                 {
+                    log.info("URL For Access Code : " + url);
                     HttpResponse response = null;
-                    CloseableHttpClient httpClient = HttpClientBuilder.create().build();
+                    httpClient = HttpClientBuilder.create().build();
 
                     HttpGet httpGet = new HttpGet(url);
 
@@ -141,6 +144,10 @@ public class AuthController
             log.error("Error Accessing Destination :  " + desNameOAuthCred);
             log.error("Error Details :  " + e.getLocalizedMessage());
             return new ResponseEntity<>(HttpStatus.EXPECTATION_FAILED);
+        }
+        finally
+        {
+            httpClient.close();
         }
         return new ResponseEntity<>(bearer, HttpStatus.OK);
 
