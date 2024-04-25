@@ -180,6 +180,8 @@ public class AuthController
 
                 // Create an HTTP POST request to the token endpoint
                 String url = acCodeParams.getAuthUrl();
+                log.info("Getting Token from Url : " + url);
+
                 if (StringUtils.hasText(url) && StringUtils.hasText(acCodeParams.getClientId())
                         && StringUtils.hasText(acCodeParams.getClientSecret()))
                 {
@@ -206,47 +208,50 @@ public class AuthController
 
                         // Write the request body
                         UrlEncodedFormEntity entity = new UrlEncodedFormEntity(formparams, Consts.UTF_8);
-                        httpPost.setEntity(entity);
-
-                        log.info(entity.toString());
-
-                        // Fire the Url
-                        HttpResponse response = httpClient.execute(httpPost);
-                        log.info(response.toString());
-                        // verify the valid error code first
-                        int statusCode = response.getStatusLine().getStatusCode();
-                        if (statusCode != HttpStatus.OK.value())
+                        if (entity != null)
                         {
-                            log.error("Error obtaining Access Token: Http REquest failed with Status  " + statusCode);
-                            log.error("Error Details :  " + response.getEntity().toString());
-                            return new ResponseEntity<>(HttpStatus.EXPECTATION_FAILED);
-                        }
+                            log.info(entity.toString());
+                            httpPost.setEntity(entity);
 
-                        else
-                        {
-                            // Parse the JSON response
-                            JSONObject jsonObject = new JSONObject(response);
-                            if (jsonObject != null)
+                            // Fire the Url
+                            HttpResponse response = httpClient.execute(httpPost);
+                            log.info(response.toString());
+                            // verify the valid error code first
+                            int statusCode = response.getStatusLine().getStatusCode();
+                            if (statusCode != HttpStatus.OK.value())
                             {
-                                bearer = new TY_BearerToken();
-                                // Get the access token
-                                String accessToken = jsonObject.getString("access_token");
-                                if (StringUtils.hasText(accessToken))
+                                log.info(
+                                        "Error obtaining Access Token: Http REquest failed with Status  " + statusCode);
+                                log.info("Error Details :  " + response.getEntity().toString());
+                                return new ResponseEntity<>(HttpStatus.EXPECTATION_FAILED);
+                            }
+
+                            else
+                            {
+                                // Parse the JSON response
+                                JSONObject jsonObject = new JSONObject(response);
+                                if (jsonObject != null)
                                 {
-                                    bearer.setAccessToken(accessToken);
+                                    bearer = new TY_BearerToken();
+                                    // Get the access token
+                                    String accessToken = jsonObject.getString("access_token");
+                                    if (StringUtils.hasText(accessToken))
+                                    {
+                                        bearer.setAccessToken(accessToken);
+                                    }
+
+                                    if (StringUtils.hasText(String.valueOf(jsonObject.getInt("expires_in"))))
+                                    {
+                                        bearer.setExpiresIn(jsonObject.getInt("expires_in"));
+
+                                    }
+
+                                    if (StringUtils.hasText((jsonObject.getString("scope"))))
+                                    {
+                                        bearer.setScope(jsonObject.getString("scope"));
+                                    }
+
                                 }
-
-                                if (StringUtils.hasText(String.valueOf(jsonObject.getInt("expires_in"))))
-                                {
-                                    bearer.setExpiresIn(jsonObject.getInt("expires_in"));
-
-                                }
-
-                                if (StringUtils.hasText((jsonObject.getString("scope"))))
-                                {
-                                    bearer.setScope(jsonObject.getString("scope"));
-                                }
-
                             }
                         }
 
@@ -261,8 +266,8 @@ public class AuthController
 
         Exception e)
         {
-            log.error("Error accessing Destination  " + desNameOAuthCred);
-            log.error("Error Details :  " + e.getLocalizedMessage());
+            log.info("Error accessing Destination  " + desNameOAuthCred);
+            log.info("Error Details :  " + e.getLocalizedMessage());
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
         finally
