@@ -211,7 +211,7 @@ public class AuthController
                         if (entity != null)
                         {
                             log.info("Entity Text in url encoded form.....");
-                            log.info(entity.toString());
+                            log.info(entity.getContent().toString());
                             httpPost.setEntity(entity);
 
                             // Fire the Url
