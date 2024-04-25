@@ -7,10 +7,9 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class TY_BearerToken
+public class TY_TokenRequestBody
 {
-    private String accessToken;
-    private String refreshToken;
-    private long expiresIn;
-    private String scope;
+    private String grant_type;
+    private String client_id;
+    private String client_secret;
 }

@@ -20,11 +20,13 @@ public class CL_DestinationUtilities
 {
     public static final String GC_tokenServiceURL = "tokenServiceURL";
     public static final String GC_clientId = "clientId";
+    public static final String GC_clientSecret = "clientSecret";
     public static final String GC_URL = "URL";
     public static final String GC_code = "code";
     public static final String GC_redirect_uri = "redirect_uri";
     public static final String GC_response_type = "response_type";
     public static final String GC_Header_Location = "location";
+    public static final String GC_ClientCredentials = "client_credentials";
 
     public static TY_AccessCodeParams getAccessCodeParams4OAuthDestination(String destination) throws Exception
     {
@@ -52,6 +54,16 @@ public class CL_DestinationUtilities
                 if (StringUtils.hasText(clientId))
                 {
                     acCodeParms.setClientId(clientId);
+                }
+            }
+
+            String clientSecret = desProps.get(GC_clientSecret);
+            if (StringUtils.hasText(clientSecret))
+            {
+                clientSecret = getValue4mPattern(clientSecret);
+                if (StringUtils.hasText(clientSecret))
+                {
+                    acCodeParms.setClientSecret(clientSecret);
                 }
             }
 

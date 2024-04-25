@@ -1,17 +1,17 @@
 package restapi.controller;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.PrintWriter;
 import java.io.StringWriter;
-import java.net.HttpURLConnection;
-import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.http.Header;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.entity.ContentType;
+import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.json.JSONObject;
@@ -22,6 +22,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sap.cloud.sdk.cloudplatform.connectivity.Destination;
 import com.sap.cloud.sdk.cloudplatform.connectivity.DestinationAccessor;
 import com.sap.cloud.sdk.cloudplatform.connectivity.exception.DestinationAccessException;
@@ -29,6 +30,7 @@ import com.sap.cloud.sdk.cloudplatform.connectivity.exception.DestinationAccessE
 import lombok.extern.slf4j.Slf4j;
 import restapi.pojos.TY_AccessCodeParams;
 import restapi.pojos.TY_BearerToken;
+import restapi.pojos.TY_TokenRequestBody;
 import restapi.utilities.CL_DestinationUtilities;
 
 @RestController
@@ -39,7 +41,7 @@ public class AuthController
 
     private final String desName = "BTP_SVC_INT";
 
-    private final String desNameOAuthCred = "REST_API_AUTH_CODE";
+    private final String desNameOAuthCred = "REST_API_BEARER";
 
     @GetMapping("/basic")
     public ResponseEntity<Map<String, String>> accessPublicEndpoint()
@@ -118,7 +120,7 @@ public class AuthController
 
                     // verify the valid error code first
                     int statusCode = response.getStatusLine().getStatusCode();
-                    if (statusCode != org.apache.http.HttpStatus.SC_MOVED_TEMPORARILY)
+                    if (statusCode != org.apache.http.HttpStatus.SC_OK)
                     {
                         throw new RuntimeException("Failed with HTTP error code : " + statusCode);
                     }
@@ -157,43 +159,95 @@ public class AuthController
 
     }
 
-
-    @GetMapping("/bearer2")
-    public void getToken() throws IOException
+    @GetMapping("/bearerToken")
+    public ResponseEntity<TY_BearerToken> getToken() throws IOException
     {
-        // The client ID and client secret of your application
-        String clientId = "sb-java17superapp!t157677";
-        String clientSecret = "6AxiQZGgnsAHclyoBM6x2EZ5hmM=";
-        // The token endpoint of the authorization server
-        String tokenEndpoint = "https://sapit-core-playground-esm.authentication.eu10.hana.ondemand.com/oauth/token";
-        // Create an HTTP POST request to the token endpoint
-        URL url = new URL(tokenEndpoint);
-        HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-        connection.setRequestMethod("POST");
-        connection.setDoOutput(true);
-        // Set the request headers
-        connection.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
-        // Write the request body
-        PrintWriter writer = new PrintWriter(connection.getOutputStream());
-        writer.write("grant_type=client_credentials");
-        writer.write("&client_id=" + clientId);
-        writer.write("&client_secret=" + clientSecret);
-        writer.flush();
-        // Get the response
-        InputStream responseStream = connection.getInputStream();
-        // Read the response body
-        byte[] responseBytes = new byte[responseStream.available()];
-        responseStream.read(responseBytes);
-        // Close the connection
-        connection.disconnect();
-        // Convert the response bytes to a string
-        String responseString = new String(responseBytes);
-        // Parse the JSON response
-        JSONObject jsonObject = new JSONObject(responseString);
-        // Get the access token
-        String accessToken = jsonObject.getString("access_token");
-        // Print the access token
-        log.info("Access token: " + accessToken);
+        TY_AccessCodeParams acCodeParams;
+        TY_BearerToken bearer = null;
+        CloseableHttpClient httpClient = null;
+        try
+        {
+            acCodeParams = CL_DestinationUtilities.getAccessCodeParams4OAuthDestination(desNameOAuthCred);
+
+            if (acCodeParams != null)
+            {
+
+                // Create an HTTP POST request to the token endpoint
+                String url = acCodeParams.getAuthUrl();
+                if (StringUtils.hasText(url) && StringUtils.hasText(acCodeParams.getClientId())
+                        && StringUtils.hasText(acCodeParams.getClientSecret()))
+                {
+
+                    httpClient = HttpClientBuilder.create().build();
+
+                    HttpPost httpPost = new HttpPost(url);
+                    // Set the request headers
+                    httpPost.addHeader("Content-Type", "application/x-www-form-urlencoded");
+                    // Write the request body
+                    TY_TokenRequestBody reqBody = new TY_TokenRequestBody(CL_DestinationUtilities.GC_ClientCredentials,
+                            acCodeParams.getClientId(), acCodeParams.getClientSecret());
+                    if (reqBody != null)
+                    {
+                        ObjectMapper objMapper = new ObjectMapper();
+                        String requestBody = objMapper.writeValueAsString(reqBody);
+
+                        StringEntity entity = new StringEntity(requestBody, ContentType.APPLICATION_JSON);
+                        httpPost.setEntity(entity);
+
+                        // Fire the Url
+                        HttpResponse response = httpClient.execute(httpPost);
+                        // verify the valid error code first
+                        int statusCode = response.getStatusLine().getStatusCode();
+                        if (statusCode != HttpStatus.OK.value())
+                        {
+                            log.error("Error obtaining Access Token: Http REquest failed with Status  " + statusCode);
+                            log.error("Error Details :  " + response.getEntity().toString());
+                            return new ResponseEntity<>(HttpStatus.EXPECTATION_FAILED);
+                        }
+
+                        else
+                        {
+                            // Parse the JSON response
+                            JSONObject jsonObject = new JSONObject(response);
+                            if (jsonObject != null)
+                            {
+                                bearer = new TY_BearerToken();
+                                // Get the access token
+                                String accessToken = jsonObject.getString("access_token");
+                                if (StringUtils.hasText(accessToken))
+                                {
+                                    bearer.setAccessToken(accessToken);
+                                }
+
+                                if (StringUtils.hasText(String.valueOf(jsonObject.getInt("expires_in"))))
+                                {
+                                    bearer.setExpiresIn(jsonObject.getInt("expires_in"));
+
+                                }
+
+                                if (StringUtils.hasText((jsonObject.getString("scope"))))
+                                {
+                                    bearer.setScope(jsonObject.getString("scope"));
+                                }
+
+                            }
+                        }
+
+                    }
+
+                }
+
+            }
+        }
+
+        catch (Exception e)
+        {
+            log.error("Error accessing Destination  " + desNameOAuthCred);
+            log.error("Error Details :  " + e.getLocalizedMessage());
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+
+        return new ResponseEntity<>(bearer, HttpStatus.OK);
     }
 
     private Map<String, String> getDestinationDetails(String destinationName) throws Exception

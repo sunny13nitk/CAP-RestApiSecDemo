@@ -12,6 +12,7 @@ public class TY_AccessCodeParams
 
     private String authUrl;
     private String clientId;
+    private String clientSecret;
     private String redirectUrl;
     private String responseType;
 }
