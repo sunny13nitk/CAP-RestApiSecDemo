@@ -1,8 +1,11 @@
 package restapi.controller;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -11,6 +14,7 @@ import org.apache.http.HttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
+import org.json.JSONObject;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.StringUtils;
@@ -151,6 +155,45 @@ public class AuthController
         }
         return new ResponseEntity<>(bearer, HttpStatus.OK);
 
+    }
+
+
+    @GetMapping("/bearer2")
+    public void getToken() throws IOException
+    {
+        // The client ID and client secret of your application
+        String clientId = "sb-java17superapp!t157677";
+        String clientSecret = "6AxiQZGgnsAHclyoBM6x2EZ5hmM=";
+        // The token endpoint of the authorization server
+        String tokenEndpoint = "https://sapit-core-playground-esm.authentication.eu10.hana.ondemand.com/oauth/token";
+        // Create an HTTP POST request to the token endpoint
+        URL url = new URL(tokenEndpoint);
+        HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+        connection.setRequestMethod("POST");
+        connection.setDoOutput(true);
+        // Set the request headers
+        connection.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
+        // Write the request body
+        PrintWriter writer = new PrintWriter(connection.getOutputStream());
+        writer.write("grant_type=client_credentials");
+        writer.write("&client_id=" + clientId);
+        writer.write("&client_secret=" + clientSecret);
+        writer.flush();
+        // Get the response
+        InputStream responseStream = connection.getInputStream();
+        // Read the response body
+        byte[] responseBytes = new byte[responseStream.available()];
+        responseStream.read(responseBytes);
+        // Close the connection
+        connection.disconnect();
+        // Convert the response bytes to a string
+        String responseString = new String(responseBytes);
+        // Parse the JSON response
+        JSONObject jsonObject = new JSONObject(responseString);
+        // Get the access token
+        String accessToken = jsonObject.getString("access_token");
+        // Print the access token
+        log.info("Access token: " + accessToken);
     }
 
     private Map<String, String> getDestinationDetails(String destinationName) throws Exception
