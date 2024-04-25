@@ -127,7 +127,6 @@ public class CL_DestinationUtilities
         if (matcher.find())
         {
             parsedVal = matcher.group(1);
-            log.info(parsedVal);
         }
         return parsedVal;
     }

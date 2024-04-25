@@ -182,10 +182,8 @@ public class AuthController
 
             if (acCodeParams != null)
             {
-
                 // Create an HTTP POST request to the token endpoint
                 String url = acCodeParams.getAuthUrl();
-                log.info("Getting Token from Url : " + url);
 
                 if (StringUtils.hasText(url) && StringUtils.hasText(acCodeParams.getClientId())
                         && StringUtils.hasText(acCodeParams.getClientSecret()))
@@ -195,28 +193,6 @@ public class AuthController
                             acCodeParams.getClientId(), acCodeParams.getClientSecret());
                     if (reqBody != null)
                     {
-
-                        log.info(reqBody.toString());
-
-                        // @formatter:off
-                        String params = Map.of(
-                                                CL_DestinationUtilities.GC_GrantType, 
-                                                CL_DestinationUtilities.GC_ClientCredentials,
-                                                CL_DestinationUtilities.GC_ClientID_Token,
-                                                reqBody.getClient_id(),
-                                                CL_DestinationUtilities.GC_ClientSecret_Token,
-                                                reqBody.getClient_secret())
-                                        .entrySet()
-                                        .stream()
-                                        .map(entry -> Stream.of(
-                                                URLEncoder.encode(entry.getKey(), StandardCharsets.UTF_8),
-                                                URLEncoder.encode(entry.getValue(), StandardCharsets.UTF_8))
-                                                .collect(Collectors.joining("="))
-                                        ).collect(Collectors.joining("&"));
-
-                    // @formatter:on
-                        log.info("Form Encoded String.....");
-                        log.info(params);
 
                         List<NameValuePair> formparams = new ArrayList<NameValuePair>();
                         formparams.add(new BasicNameValuePair(CL_DestinationUtilities.GC_GrantType,
@@ -238,14 +214,12 @@ public class AuthController
                         UrlEncodedFormEntity entity = new UrlEncodedFormEntity(formparams, Consts.UTF_8);
                         if (entity != null)
                         {
-                            log.info("Entity Text in url encoded form.....");
-                            log.info(String.valueOf(entity.getContentLength()));
+
                             httpPost.setEntity(entity);
 
                             // Fire the Url
                             HttpResponse response = httpClient.execute(httpPost);
-                            log.info("Response.....");
-                            log.info(response.toString());
+
                             // verify the valid error code first
                             int statusCode = response.getStatusLine().getStatusCode();
                             if (statusCode != HttpStatus.OK.value())
