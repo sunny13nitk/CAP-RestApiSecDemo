@@ -3,17 +3,23 @@ package restapi.controller;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
+import org.apache.http.Consts;
 import org.apache.http.Header;
 import org.apache.http.HttpResponse;
+import org.apache.http.NameValuePair;
+import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.ContentType;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
+import org.apache.http.message.BasicNameValuePair;
 import org.json.JSONObject;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -178,23 +184,31 @@ public class AuthController
                         && StringUtils.hasText(acCodeParams.getClientSecret()))
                 {
 
-                    httpClient = HttpClientBuilder.create().build();
-
-                    HttpPost httpPost = new HttpPost(url);
-                    // Set the request headers
-                    httpPost.addHeader("Content-Type", "application/x-www-form-urlencoded");
-                    httpPost.addHeader("Accept", "application/json");
-                    // Write the request body
                     TY_TokenRequestBody reqBody = new TY_TokenRequestBody(CL_DestinationUtilities.GC_ClientCredentials,
                             acCodeParams.getClientId(), acCodeParams.getClientSecret());
                     if (reqBody != null)
                     {
-                        ObjectMapper objMapper = new ObjectMapper();
-                        String requestBody = objMapper.writeValueAsString(reqBody);
-                        log.info(requestBody);
 
-                        StringEntity entity = new StringEntity(requestBody, ContentType.APPLICATION_JSON);
+                        List<NameValuePair> formparams = new ArrayList<NameValuePair>();
+                        formparams.add(new BasicNameValuePair(CL_DestinationUtilities.GC_GrantType,
+                                CL_DestinationUtilities.GC_ClientCredentials));
+                        formparams.add(new BasicNameValuePair(CL_DestinationUtilities.GC_ClientID_Token,
+                                reqBody.getClient_id()));
+                        formparams.add(new BasicNameValuePair(CL_DestinationUtilities.GC_ClientSecret_Token,
+                                reqBody.getClient_secret()));
+
+                        httpClient = HttpClientBuilder.create().build();
+
+                        HttpPost httpPost = new HttpPost(url);
+                        // Set the request headers
+                        httpPost.addHeader("Content-Type", "application/x-www-form-urlencoded");
+                        httpPost.addHeader("Accept", "application/json");
+
+                        // Write the request body
+                        UrlEncodedFormEntity entity = new UrlEncodedFormEntity(formparams, Consts.UTF_8);
                         httpPost.setEntity(entity);
+
+                        log.info(entity.toString());
 
                         // Fire the Url
                         HttpResponse response = httpClient.execute(httpPost);
@@ -243,7 +257,9 @@ public class AuthController
             }
         }
 
-        catch (Exception e)
+        catch (
+
+        Exception e)
         {
             log.error("Error accessing Destination  " + desNameOAuthCred);
             log.error("Error Details :  " + e.getLocalizedMessage());

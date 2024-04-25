@@ -26,7 +26,10 @@ public class CL_DestinationUtilities
     public static final String GC_redirect_uri = "redirect_uri";
     public static final String GC_response_type = "response_type";
     public static final String GC_Header_Location = "location";
+    public static final String GC_GrantType = "grant_type";
     public static final String GC_ClientCredentials = "client_credentials";
+    public static final String GC_ClientID_Token = "client_id";
+    public static final String GC_ClientSecret_Token = "client_secret";
 
     public static TY_ApplicationDetails getAccessCodeParams4OAuthDestination(String destination) throws Exception
     {
