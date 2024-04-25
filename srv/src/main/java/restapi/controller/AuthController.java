@@ -267,7 +267,7 @@ public class AuthController
         }
         finally
         {
-            httpClient.close();
+            httpClient.close(); 
         }
 
         return new ResponseEntity<>(bearer, HttpStatus.OK);
