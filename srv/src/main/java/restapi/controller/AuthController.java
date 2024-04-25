@@ -210,6 +210,7 @@ public class AuthController
                         UrlEncodedFormEntity entity = new UrlEncodedFormEntity(formparams, Consts.UTF_8);
                         if (entity != null)
                         {
+                            log.info("Entity Text in url encoded form.....");
                             log.info(entity.toString());
                             httpPost.setEntity(entity);
 
