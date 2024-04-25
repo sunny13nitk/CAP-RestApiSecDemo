@@ -281,9 +281,9 @@ public class AuthController
 
                                     }
 
-                                    if (StringUtils.hasText(jsonNode.get("access_token").asText()))
+                                    if (StringUtils.hasText(jsonNode.get("scope").asText()))
                                     {
-                                        bearer.setScope(jsonNode.get("access_token").asText());
+                                        bearer.setScope(jsonNode.get("scope").asText());
                                     }
                                 }
 
