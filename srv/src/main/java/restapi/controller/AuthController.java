@@ -183,6 +183,7 @@ public class AuthController
                     HttpPost httpPost = new HttpPost(url);
                     // Set the request headers
                     httpPost.addHeader("Content-Type", "application/x-www-form-urlencoded");
+                    httpPost.addHeader("Accept", "application/json");
                     // Write the request body
                     TY_TokenRequestBody reqBody = new TY_TokenRequestBody(CL_DestinationUtilities.GC_ClientCredentials,
                             acCodeParams.getClientId(), acCodeParams.getClientSecret());
@@ -190,7 +191,7 @@ public class AuthController
                     {
                         ObjectMapper objMapper = new ObjectMapper();
                         String requestBody = objMapper.writeValueAsString(reqBody);
-                        
+                        log.info(requestBody);
 
                         StringEntity entity = new StringEntity(requestBody, ContentType.APPLICATION_JSON);
                         httpPost.setEntity(entity);
