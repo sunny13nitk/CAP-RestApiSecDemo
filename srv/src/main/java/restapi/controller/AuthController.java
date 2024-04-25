@@ -5,6 +5,11 @@ import java.io.StringWriter;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.http.Header;
+import org.apache.http.HttpResponse;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClientBuilder;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.StringUtils;
@@ -81,6 +86,7 @@ public class AuthController
     public ResponseEntity<TY_BearerToken> getBearerToken()
     {
         TY_BearerToken bearer = null;
+        String authCode = null;
 
         // Prepare Auth Code Url
         try
@@ -93,7 +99,40 @@ public class AuthController
                         + acCodeParams.getClientId() + "&" + CL_DestinationUtilities.GC_redirect_uri + "="
                         + acCodeParams.getRedirectUrl() + "&" + CL_DestinationUtilities.GC_response_type + "="
                         + acCodeParams.getResponseType();
-                log.info(url);
+                if (StringUtils.hasText(url))
+                {
+                    HttpResponse response = null;
+                    CloseableHttpClient httpClient = HttpClientBuilder.create().build();
+
+                    HttpGet httpGet = new HttpGet(url);
+
+                    // Fire the Url
+                    response = httpClient.execute(httpGet);
+
+                    // verify the valid error code first
+                    int statusCode = response.getStatusLine().getStatusCode();
+                    if (statusCode != org.apache.http.HttpStatus.SC_MOVED_TEMPORARILY)
+                    {
+                        throw new RuntimeException("Failed with HTTP error code : " + statusCode);
+                    }
+                    else
+                    {
+                        log.info("Authentication Successful for Auth Code Generation");
+                        // Get the header with the name location
+                        Header[] headers = response.getHeaders(CL_DestinationUtilities.GC_Header_Location);
+                        if (headers.length > 0)
+                        {
+                            log.info("Location Header Bound...");
+                            String[] headerParts = headers[0].toString().split("code=");
+                            if (headerParts.length > 0)
+                            {
+                                authCode = headerParts[headerParts.length - 1];
+                                log.info("Auth Code Bound : " + authCode);
+                            }
+                        }
+                    }
+
+                }
 
             }
         }
