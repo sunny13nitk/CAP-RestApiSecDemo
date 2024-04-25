@@ -32,6 +32,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sap.cloud.sdk.cloudplatform.connectivity.Destination;
 import com.sap.cloud.sdk.cloudplatform.connectivity.DestinationAccessor;
 import com.sap.cloud.sdk.cloudplatform.connectivity.exception.DestinationAccessException;
@@ -259,32 +261,32 @@ public class AuthController
                                 // Parse the JSON response
                                 HttpEntity entityResp = response.getEntity();
                                 String apiOutput = EntityUtils.toString(entityResp);
-                                log.info(" Response Output .....");
-                                log.info(apiOutput);
 
-                                JSONObject jsonObject = new JSONObject(response);
-                                if (jsonObject != null)
+                                // Conerting to JSON
+                                ObjectMapper mapper = new ObjectMapper();
+                                JsonNode jsonNode = mapper.readTree(apiOutput);
+                                if (jsonNode != null)
                                 {
                                     bearer = new TY_BearerToken();
                                     // Get the access token
-                                    String accessToken = jsonObject.getString("access_token");
+                                    String accessToken = jsonNode.get("access_token").asText();
                                     if (StringUtils.hasText(accessToken))
                                     {
                                         bearer.setAccessToken(accessToken);
                                     }
 
-                                    if (StringUtils.hasText(String.valueOf(jsonObject.getInt("expires_in"))))
+                                    if (StringUtils.hasText(String.valueOf(jsonNode.get("expires_in").asInt())))
                                     {
-                                        bearer.setExpiresIn(jsonObject.getInt("expires_in"));
+                                        bearer.setExpiresIn(jsonNode.get("expires_in").asInt());
 
                                     }
 
-                                    if (StringUtils.hasText((jsonObject.getString("scope"))))
+                                    if (StringUtils.hasText(jsonNode.get("access_token").asText()))
                                     {
-                                        bearer.setScope(jsonObject.getString("scope"));
+                                        bearer.setScope(jsonNode.get("access_token").asText());
                                     }
-
                                 }
+
                             }
                         }
 
