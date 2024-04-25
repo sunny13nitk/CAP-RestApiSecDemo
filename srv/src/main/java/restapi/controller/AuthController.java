@@ -3,14 +3,26 @@ package restapi.controller;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
+import org.apache.http.Consts;
 import org.apache.http.Header;
 import org.apache.http.HttpResponse;
+import org.apache.http.NameValuePair;
+import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.methods.HttpPost;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
+import org.apache.http.message.BasicNameValuePair;
+import org.json.JSONObject;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.StringUtils;
@@ -182,9 +194,9 @@ public class AuthController
 
                         log.info(reqBody.toString());
 
-                         // @formatter:off
+                        // @formatter:off
                         String params = Map.of(
-                                                CL_DestinationUtilities.GC_GrantType, apiObject.getClientId(),
+                                                CL_DestinationUtilities.GC_GrantType, 
                                                 CL_DestinationUtilities.GC_ClientCredentials,
                                                 CL_DestinationUtilities.GC_ClientID_Token,
                                                 reqBody.getClient_id(),
@@ -214,7 +226,6 @@ public class AuthController
 
                         HttpPost httpPost = new HttpPost(url);
 
-                        
                         // Set the request headers
                         httpPost.addHeader("Content-Type", "application/x-www-form-urlencoded");
                         httpPost.addHeader("Accept", "application/json");
@@ -224,7 +235,7 @@ public class AuthController
                         if (entity != null)
                         {
                             log.info("Entity Text in url encoded form.....");
-                            log.info(entity.getContent().);
+                            log.info(String.valueOf(entity.getContentLength()));
                             httpPost.setEntity(entity);
 
                             // Fire the Url
@@ -287,7 +298,7 @@ public class AuthController
         }
         finally
         {
-            httpClient.close(); 
+            httpClient.close();
         }
 
         return new ResponseEntity<>(bearer, HttpStatus.OK);
