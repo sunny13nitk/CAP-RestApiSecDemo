@@ -216,6 +216,7 @@ public class AuthController
 
                             // Fire the Url
                             HttpResponse response = httpClient.execute(httpPost);
+                            log.info("Response.....");
                             log.info(response.toString());
                             // verify the valid error code first
                             int statusCode = response.getStatusLine().getStatusCode();
