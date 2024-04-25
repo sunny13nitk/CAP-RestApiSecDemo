@@ -199,6 +199,7 @@ public class AuthController
                                         ).collect(Collectors.joining("&"));
 
                     // @formatter:on
+                        log.info("Form Encoded String.....");
                         log.info(params);
 
                         List<NameValuePair> formparams = new ArrayList<NameValuePair>();
