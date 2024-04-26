@@ -1,6 +1,5 @@
 **/gen/
 **/edmx/
-*.db
 *.sqlite
 schema*.sql
 default-env.json
