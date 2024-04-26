@@ -14,4 +14,4 @@ applications:
   services:    
     - srv-cloud-destService
     - restapi-xsuaa
-    - restapi-hana
+    - restapi-hdi-hana
