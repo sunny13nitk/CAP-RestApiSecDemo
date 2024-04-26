@@ -9,6 +9,7 @@ import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Profile;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.core.annotation.Order;
 import org.springframework.core.convert.converter.Converter;
@@ -26,7 +27,10 @@ import com.sap.cloud.security.spring.config.IdentityServicesPropertySourceFactor
 import com.sap.cloud.security.token.TokenClaims;
 import com.sap.cloud.security.xsuaa.token.AuthenticationToken;
 
+import restapi.utilities.CL_DestinationUtilities;
+
 @Configuration
+@Profile(CL_DestinationUtilities.GC_BTPProfile)
 @EnableWebSecurity()
 @EnableMethodSecurity(securedEnabled = true, jsr250Enabled = true)
 @Order(1) // needs to have higher priority than CAP security config
