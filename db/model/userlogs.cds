@@ -11,6 +11,6 @@ namespace db.userlogs;
 entity userlog : cuid {
     username  : String(50);
     timestamp : Timestamp;
-    sendpoint : String(50);
-    status    : Int16
+    endpoint : String(50);
+
 }
