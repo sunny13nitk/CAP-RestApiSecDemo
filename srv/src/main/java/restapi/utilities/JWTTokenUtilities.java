@@ -14,6 +14,7 @@ import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.util.EntityUtils;
 import org.json.JSONObject;
+import org.springframework.http.HttpStatus;
 import org.springframework.util.StringUtils;
 
 import com.fasterxml.jackson.databind.JsonNode;
@@ -25,6 +26,7 @@ import restapi.exceptions.JWTTokenException;
 @Slf4j
 public class JWTTokenUtilities
 {
+    // This could also be obtianed from token Signature Attribute
     public static final String gc_algoName = "RSA";
 
     public static RSAPublicKey getRSAPublicKey(String header) throws JWTTokenException, IOException
@@ -50,7 +52,8 @@ public class JWTTokenUtilities
                 }
             }
             // Get Token(s) Url
-            String tokenKeyUrl = header.split(",")[1].split(":")[1];
+            String tokenKeyUrl = (header.split(",")[1].split(":")[1]) + ":" + (header.split(",")[1].split(":")[2]);
+            tokenKeyUrl = tokenKeyUrl.substring(1, tokenKeyUrl.length() - 1);
             if (StringUtils.hasText(tokenKeyUrl))
             {
                 try
@@ -88,6 +91,7 @@ public class JWTTokenUtilities
 
                             if (jsonNode != null)
                             {
+                                String gv_kty = new String();
                                 JsonNode contentNode = jsonNode.at("/keys");
                                 if (contentNode != null && contentNode.isArray() && contentNode.size() > 0)
                                 {
@@ -115,9 +119,21 @@ public class JWTTokenUtilities
                                                     X509EncodedKeySpec spec = new X509EncodedKeySpec(
                                                             base64EncodedKeyBytes);
 
-                                                    KeyFactory kf = KeyFactory.getInstance(gc_algoName);
+                                                    KeyFactory kf = KeyFactory.getInstance(gv_kty);
                                                     rsaKey = (RSAPublicKey) kf.generatePublic(spec);
                                                     return rsaKey;
+                                                }
+
+                                            }
+
+                                            if (jsonField.getKey().equals("kty"))
+                                            {
+                                                gv_kty = jsonField.getValue().asText();
+                                                if (!StringUtils.hasText(gv_kty))
+                                                {
+                                                    throw new JWTTokenException("Failed with HTTP error code : "
+                                                            + HttpStatus.UNAUTHORIZED
+                                                            + "while retreiving Algorithm Type from Header Token Signature");
                                                 }
 
                                             }

@@ -36,6 +36,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
+import com.auth0.jwt.exceptions.TokenExpiredException;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -470,6 +471,10 @@ public class AuthController
                 catch (Exception e)
                 {
                     tokenInfo = new TY_TokenCheck();
+                    if (e instanceof TokenExpiredException)
+                    {
+                        tokenInfo.setExpired(true);
+                    }
                     tokenInfo.setMessage(e.getLocalizedMessage());
                     return new ResponseEntity<>(tokenInfo, HttpStatus.UNAUTHORIZED);
                 }

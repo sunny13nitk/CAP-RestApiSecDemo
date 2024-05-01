@@ -41,14 +41,7 @@ public class CL_DestinationUtilities
     public static final String GC_ClientSecret_Token = "client_secret";
     public static final String GC_BTPProfile = "btp";
     public static final String GC_LocalProfile = "local";
-    public static final String GC_VKEY = "-----BEGIN PUBLIC KEY-----"
-            + "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA1RBXewdBMp6J19y4cTB9"
-            + "Cwd8MzxfBdJdHX12fr1igbWGllXPbq4Q+Mdd7qi8BPAqVSgl7xQtL+FuE/x3Lcw6"
-            + "GgB3JxgMFCpAKGu25lHI/zyYUOjB7z9CMPtWyKTdqLV5/2j5Bviy/+w2X9fWpXJp"
-            + "YzV0BGroOs6XRZ5/dtwbS5C4Cv2WGAczX2a2LuzWcwQ/aC9u0PRx47EUduW/Fd/V"
-            + "E7AHiwwBs2vnwGIN6jTRrchNXwpw/pqrzO0g77/OoykTqx7sb7WYX+nueks2FxWe"
-            + "hC1NPKJSxyIikobtplDCuEpX50PlgeIOEcQdMk3/+VTUBMVBFhFZjdQb4P5lRWhZ" + "yQIDAQAB"
-            + "-----END PUBLIC KEY-----";
+    
 
     public static TY_ApplicationDetails getAccessCodeParams4OAuthDestination(String destination) throws Exception
     {
@@ -106,43 +99,7 @@ public class CL_DestinationUtilities
         return acCodeParms;
     }
 
-    public static RSAPublicKey getRSAPublicKey() throws CertificateException
-    {
-        // var decode = Base64.getDecoder().decode(GC_VKEY.getBytes());
-        var certificate = CertificateFactory.getInstance("X.509")
-                .generateCertificate(new ByteArrayInputStream(GC_VKEY.getBytes()));
-        var publicKey = (RSAPublicKey) certificate.getPublicKey();
-        return publicKey;
-    }
-
-    public static RSAPublicKey getPublicKey(String algorithm) throws Exception
-    {
-        // Get the public key from the header.
-        // String pemEncodedPublicKey = header.split(",")[1].split(":")[1].replace("\"",
-        // "");
-        // byte[] decodedPublicKey = Base64.getDecoder().decode(GC_VKEY);
-        // X509EncodedKeySpec keySpec = new X509EncodedKeySpec(decodedPublicKey);
-
-        String publicKeyPEM = GC_VKEY.replace("-----BEGIN PUBLIC KEY-----", "");
-        publicKeyPEM = publicKeyPEM.replace("-----END PUBLIC KEY-----", "");
-        publicKeyPEM = publicKeyPEM.replace("\n", "");
-
-        // Decode the contents of the file from Base64
-        byte[] base64EncodedKeyBytes = java.util.Base64.getDecoder().decode(publicKeyPEM);
-
-        // Convert the contents of the file to a RSAPublicKey object
-        X509EncodedKeySpec spec = new X509EncodedKeySpec(base64EncodedKeyBytes);
-
-        KeyFactory kf = KeyFactory.getInstance("RSA");
-        RSAPublicKey publicKey = (RSAPublicKey) kf.generatePublic(spec);
-
-        // SecretKeySpec secretKeySpec = new
-        // SecretKeySpec(CL_DestinationUtilities.GC_VKEY.getBytes(), algorithm);
-        // KeyFactory keyFactory = KeyFactory.getInstance("RSA");
-        // PublicKey publicKey = keyFactory.generatePublic(secretKeySpec);
-        return publicKey;
-    }
-
+  
     public static Map<String, String> getOAuth2DesProps(String destination) throws Exception
     {
 
