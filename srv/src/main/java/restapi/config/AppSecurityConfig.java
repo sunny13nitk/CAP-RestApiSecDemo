@@ -47,8 +47,8 @@ public class AppSecurityConfig
     {
         // @formatter:off
         http
-               .csrf(AbstractHttpConfigurer::disable)
-               .cors(AbstractHttpConfigurer::disable)
+            //    .csrf(AbstractHttpConfigurer::disable)
+            //    .cors(AbstractHttpConfigurer::disable)
                .authorizeHttpRequests(authz ->
                            authz
                                 .requestMatchers("/authorize/**").permitAll()
