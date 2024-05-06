@@ -8,6 +8,7 @@ import org.springframework.security.config.annotation.method.configuration.Enabl
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
+import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
 
@@ -35,7 +36,9 @@ public class AppSecurityConfigLocal
                                 .requestMatchers("/authorize/**").permitAll()
                                 .requestMatchers("/logs/").hasAuthority("RESTREAD")
                                 .anyRequest().denyAll())
-                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)) ; 
+                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .csrf(AbstractHttpConfigurer::disable);
+                
         // Adjust the converter to represent your use case
         // Use MyCustomHybridTokenAuthenticationConverter when IAS and XSUAA is used
         // Use MyCustomIasTokenAuthenticationConverter when only IAS is used                                
