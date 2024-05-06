@@ -28,7 +28,6 @@ import com.sap.cloud.security.spring.config.IdentityServicesPropertySourceFactor
 import com.sap.cloud.security.token.TokenClaims;
 import com.sap.cloud.security.xsuaa.token.AuthenticationToken;
 
-import restapi.config.AppSecurityConfig.MyCustomHybridTokenAuthenticationConverter;
 import restapi.utilities.CL_DestinationUtilities;
 
 @Configuration
@@ -48,13 +47,13 @@ public class AppSecurityConfig
     {
         // @formatter:off
         http
+               .csrf(AbstractHttpConfigurer::disable)
                .authorizeHttpRequests(authz ->
                            authz
                                 .requestMatchers("/authorize/**").permitAll()
                                 .requestMatchers("/logs/").hasAuthority("RESTREAD")
                                 .anyRequest().denyAll())
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                .csrf(AbstractHttpConfigurer::disable)
                 .oauth2ResourceServer(oauth2 -> oauth2
                         .jwt(jwt -> jwt
                                 .jwtAuthenticationConverter(new MyCustomHybridTokenAuthenticationConverter()))); 
