@@ -52,6 +52,7 @@ public class AppSecurityConfig
                                 .requestMatchers("/logs/").hasAuthority("RESTREAD")
                                 .anyRequest().denyAll())
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .csrf(csrf -> csrf.disable())
                 .oauth2ResourceServer(oauth2 -> oauth2
                         .jwt(jwt -> jwt
                                 .jwtAuthenticationConverter(new MyCustomHybridTokenAuthenticationConverter()))); 
