@@ -325,7 +325,7 @@ public class AuthController
     public ResponseEntity<TY_BearerToken> getToken4User(@RequestBody TY_UserAccessCredentials userAccessCredentials)
             throws IOException
     {
-
+        log.info("Inside Token retrival POST call......");
         TY_ApplicationDetails acCodeParams;
         TY_BearerToken bearer = null;
         CloseableHttpClient httpClient = null;
@@ -441,9 +441,7 @@ public class AuthController
                     }
                 }
 
-                catch (
-
-                Exception e)
+                catch (Exception e)
                 {
                     log.info("Error accessing Destination  " + desNameOAuthCred);
                     log.info("Error Details :  " + e.getLocalizedMessage());
