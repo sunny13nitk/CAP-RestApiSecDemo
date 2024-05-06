@@ -312,6 +312,7 @@ public class AuthController
      * 
      */
      // @formatter:on
+     
     @PostMapping("/bearerToken")
     public ResponseEntity<TY_BearerToken> getToken4User(@RequestBody TY_UserAccessCredentials userCredentials)
             throws IOException
