@@ -1,57 +1,70 @@
 {
-    "xsappname": "restapidemo",
-    "tenant-mode": "dedicated",
-    "oauth2-configuration": {
-      "credential-types": [
-        "instance-secret",
-        "binding-secret"
-      ],
-      "redirect-uris": [
-        "https://*.cfapps.eu10-004.hana.ondemand.com/login/callback",
-        "https://*.cfapps.eu10-004.hana.ondemand.com/**"
+  "xsappname": "restapidemo",
+  "tenant-mode": "dedicated",
+  "oauth2-configuration": {
+    "credential-types": [
+      "instance-secret",
+      "binding-secret"
+    ],
+    "redirect-uris": [
+      "https://*.cfapps.eu10-004.hana.ondemand.com/login/callback",
+      "https://*.cfapps.eu10-004.hana.ondemand.com/**"
+    ]
+  },
+  "scopes": [
+    {
+      "name": "$XSAPPNAME.RESTREAD",
+      "description": "READ Permissions for Rest API"
+    },
+    {
+      "name": "$XSAPPNAME.RESTWRITE",
+      "description": "Write Permissions for Rest API"
+    },
+    {
+      "name": "$XSAPPNAME.APIADMIN",
+      "description": "ADMIN API Access"
+    }
+  ],
+  "role-templates": [
+    {
+      "name": "RESTREAD-TM",
+      "scope-references": [
+        "$XSAPPNAME.RESTREAD"
       ]
     },
-    "scopes": [
-      {
-        "name": "$XSAPPNAME.RESTREAD",
-        "description": "READ Permissions for Rest API"
-      },
-      {
-        "name": "$XSAPPNAME.RESTWRITE",
-        "description": "Write Permissions for Rest API"
-      }
-     
-    ],
-    "role-templates": [
-      {
-        "name": "RESTREAD-TM",
-        "scope-references": [
-          "$XSAPPNAME.RESTREAD"
-        ]
-      },
-      {
-        "name": "RESTWRITE-TM",
-        "scope-references": [
-          "$XSAPPNAME.RESTWRITE"
-        ]
-      }
-      
-    ],
-    "role-collections": [
-      {
-        "name": "RESTREAD-RC",
-        "role-template-references": [
-          "$XSAPPNAME.RESTREAD-TM"
-        ]
-      },
-      {
-        "name": "RESTWRITE-RC",
-        "role-template-references": [
-          "$XSAPPNAME.RESTWRITE-TM"
-        ]
-      }
-      
-    ],
-    "attributes": [],
-    "authorities-inheritance": false
-  }
+    {
+      "name": "RESTWRITE-TM",
+      "scope-references": [
+        "$XSAPPNAME.RESTWRITE"
+      ]
+    },
+    {
+      "name": "APIADMIN-TM",
+      "scope-references": [
+        "$XSAPPNAME.APIADMIN"
+      ]
+    }
+  ],
+  "role-collections": [
+    {
+      "name": "RESTREAD-RC",
+      "role-template-references": [
+        "$XSAPPNAME.RESTREAD-TM"
+      ]
+    },
+    {
+      "name": "RESTWRITE-RC",
+      "role-template-references": [
+        "$XSAPPNAME.RESTWRITE-TM"
+      ]
+    },
+    {
+      "name": "APIADMIN-RC",
+      "role-template-references": [
+        "$XSAPPNAME.APIADMIN-TM"
+      ]
+    }
+  ],
+  "attributes": [],
+  "authorities-inheritance": false
+}

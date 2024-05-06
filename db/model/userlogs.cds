@@ -11,6 +11,18 @@ namespace db.userlogs;
 entity userlog : cuid {
     username  : String(50);
     timestamp : Timestamp;
-    endpoint : String(50);
+    endpoint  : String(50);
+
+}
+
+
+@Capabilities.Insertable: false
+@Capabilities.Deletable : false
+@Capabilities.Updatable : false
+entity apiSignUps : cuid {
+    consumer  : String(200);
+    signedAt  : Timestamp;
+    validTill : Timestamp;
+    isActive  : Boolean;
 
 }

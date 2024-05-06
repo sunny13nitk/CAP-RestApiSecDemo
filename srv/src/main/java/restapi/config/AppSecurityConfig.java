@@ -53,6 +53,7 @@ public class AppSecurityConfig
                                 .requestMatchers("/authorize/**").permitAll()
                                 .requestMatchers("/logs/").hasAuthority("RESTREAD")
                                 .requestMatchers("/token-user/").authenticated()
+                                .requestMatchers("/admin/**").hasAuthority("APIADMIN")
                                 .anyRequest().denyAll())
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .csrf(c->c.disable())
