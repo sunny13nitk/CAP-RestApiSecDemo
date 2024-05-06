@@ -37,11 +37,12 @@ public class CL_DestinationUtilities
     public static final String GC_Header_Location = "location";
     public static final String GC_GrantType = "grant_type";
     public static final String GC_ClientCredentials = "client_credentials";
+    public static final String GC_Password = "password";
+    public static final String GC_Username = "username";
     public static final String GC_ClientID_Token = "client_id";
     public static final String GC_ClientSecret_Token = "client_secret";
     public static final String GC_BTPProfile = "btp";
     public static final String GC_LocalProfile = "local";
-    
 
     public static TY_ApplicationDetails getAccessCodeParams4OAuthDestination(String destination) throws Exception
     {
@@ -99,7 +100,6 @@ public class CL_DestinationUtilities
         return acCodeParms;
     }
 
-  
     public static Map<String, String> getOAuth2DesProps(String destination) throws Exception
     {
 

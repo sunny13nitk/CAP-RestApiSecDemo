@@ -338,19 +338,24 @@ public class AuthController
                                 && StringUtils.hasText(acCodeParams.getClientSecret()))
                         {
 
-                            TY_TokenRequestBody reqBody = new TY_TokenRequestBody(
-                                    CL_DestinationUtilities.GC_ClientCredentials, acCodeParams.getClientId(),
-                                    acCodeParams.getClientSecret());
+                            TY_TokenRequestBody reqBody = new TY_TokenRequestBody(CL_DestinationUtilities.GC_Password,
+                                    acCodeParams.getClientId(), acCodeParams.getClientSecret());
                             if (reqBody != null)
                             {
 
                                 List<NameValuePair> formparams = new ArrayList<NameValuePair>();
                                 formparams.add(new BasicNameValuePair(CL_DestinationUtilities.GC_GrantType,
-                                        CL_DestinationUtilities.GC_ClientCredentials));
+                                        reqBody.getGrant_type()));
                                 formparams.add(new BasicNameValuePair(CL_DestinationUtilities.GC_ClientID_Token,
                                         reqBody.getClient_id()));
                                 formparams.add(new BasicNameValuePair(CL_DestinationUtilities.GC_ClientSecret_Token,
                                         reqBody.getClient_secret()));
+
+                                formparams.add(new BasicNameValuePair(CL_DestinationUtilities.GC_Username,
+                                        userCredentials.getUsername()));
+
+                                formparams.add(new BasicNameValuePair(CL_DestinationUtilities.GC_Password,
+                                        userCredentials.getPassword()));
 
                                 httpClient = HttpClientBuilder.create().build();
 
