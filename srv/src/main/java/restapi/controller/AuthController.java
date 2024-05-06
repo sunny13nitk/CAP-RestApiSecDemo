@@ -26,6 +26,7 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.web.csrf.CsrfToken;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -44,6 +45,7 @@ import com.sap.cloud.sdk.cloudplatform.connectivity.Destination;
 import com.sap.cloud.sdk.cloudplatform.connectivity.DestinationAccessor;
 import com.sap.cloud.sdk.cloudplatform.connectivity.exception.DestinationAccessException;
 
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import restapi.pojos.TY_ApplicationDetails;
 import restapi.pojos.TY_BearerToken;
@@ -296,6 +298,12 @@ public class AuthController
         return new ResponseEntity<>(bearer, HttpStatus.OK);
     }
 
+    @GetMapping("/csrf-token")
+    public CsrfToken getCSRFToken(HttpServletRequest request) throws IOException
+    {
+        return (CsrfToken) request.getAttribute("_csrf");
+    }
+
     // @formatter:off
     /**
      * WE can have a backend mapping of UserName (Technical User Configured);
@@ -312,7 +320,7 @@ public class AuthController
      * 
      */
      // @formatter:on
-     
+
     @PostMapping("/bearerToken")
     public ResponseEntity<TY_BearerToken> getToken4User(@RequestBody TY_UserAccessCredentials userCredentials)
             throws IOException
