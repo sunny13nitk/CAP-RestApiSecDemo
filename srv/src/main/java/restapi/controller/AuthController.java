@@ -322,132 +322,128 @@ public class AuthController
      */
      // @formatter:on
 
-    @PostMapping("/bearerToken")
-    public ResponseEntity<TY_BearerToken> getToken4User(@RequestBody TY_UserAccessCredentials userCredentials)
-            throws IOException
+    @GetMapping("/bearerToken4User")
+    public ResponseEntity<TY_BearerToken> getToken4User(@RequestHeader(name = "username") String username,
+            @RequestHeader(name = "password") String password) throws IOException
     {
 
         TY_ApplicationDetails acCodeParams;
         TY_BearerToken bearer = null;
         CloseableHttpClient httpClient = null;
-        if (userCredentials != null)
+
+        if (StringUtils.hasText(username) && StringUtils.hasText(password))
         {
-            if (StringUtils.hasText(userCredentials.getUsername())
-                    && StringUtils.hasText(userCredentials.getPassword()))
+            try
             {
-                try
+                acCodeParams = CL_DestinationUtilities.getAccessCodeParams4OAuthDestination(desNameOAuthCred);
+
+                if (acCodeParams != null)
                 {
-                    acCodeParams = CL_DestinationUtilities.getAccessCodeParams4OAuthDestination(desNameOAuthCred);
+                    // Create an HTTP POST request to the token endpoint
+                    String url = acCodeParams.getAuthUrl();
 
-                    if (acCodeParams != null)
+                    if (StringUtils.hasText(url) && StringUtils.hasText(acCodeParams.getClientId())
+                            && StringUtils.hasText(acCodeParams.getClientSecret()))
                     {
-                        // Create an HTTP POST request to the token endpoint
-                        String url = acCodeParams.getAuthUrl();
 
-                        if (StringUtils.hasText(url) && StringUtils.hasText(acCodeParams.getClientId())
-                                && StringUtils.hasText(acCodeParams.getClientSecret()))
+                        TY_TokenRequestBody reqBody = new TY_TokenRequestBody(CL_DestinationUtilities.GC_Password,
+                                acCodeParams.getClientId(), acCodeParams.getClientSecret());
+                        if (reqBody != null)
                         {
 
-                            TY_TokenRequestBody reqBody = new TY_TokenRequestBody(CL_DestinationUtilities.GC_Password,
-                                    acCodeParams.getClientId(), acCodeParams.getClientSecret());
-                            if (reqBody != null)
+                            List<NameValuePair> formparams = new ArrayList<NameValuePair>();
+                            formparams.add(new BasicNameValuePair(CL_DestinationUtilities.GC_GrantType,
+                                    reqBody.getGrant_type()));
+                            formparams.add(new BasicNameValuePair(CL_DestinationUtilities.GC_ClientID_Token,
+                                    reqBody.getClient_id()));
+                            formparams.add(new BasicNameValuePair(CL_DestinationUtilities.GC_ClientSecret_Token,
+                                    reqBody.getClient_secret()));
+
+                            formparams.add(new BasicNameValuePair(CL_DestinationUtilities.GC_Username, username));
+
+                            formparams.add(new BasicNameValuePair(CL_DestinationUtilities.GC_Password, password));
+
+                            httpClient = HttpClientBuilder.create().build();
+
+                            HttpPost httpPost = new HttpPost(url);
+
+                            // Set the request headers
+                            httpPost.addHeader("Content-Type", "application/x-www-form-urlencoded");
+                            httpPost.addHeader("Accept", "application/json");
+
+                            // Write the request body
+                            UrlEncodedFormEntity entity = new UrlEncodedFormEntity(formparams, Consts.UTF_8);
+                            if (entity != null)
                             {
 
-                                List<NameValuePair> formparams = new ArrayList<NameValuePair>();
-                                formparams.add(new BasicNameValuePair(CL_DestinationUtilities.GC_GrantType,
-                                        reqBody.getGrant_type()));
-                                formparams.add(new BasicNameValuePair(CL_DestinationUtilities.GC_ClientID_Token,
-                                        reqBody.getClient_id()));
-                                formparams.add(new BasicNameValuePair(CL_DestinationUtilities.GC_ClientSecret_Token,
-                                        reqBody.getClient_secret()));
+                                httpPost.setEntity(entity);
+                                log.info(entity.toString());
 
-                                formparams.add(new BasicNameValuePair(CL_DestinationUtilities.GC_Username,
-                                        userCredentials.getUsername()));
+                                // Fire the Url
+                                CloseableHttpResponse response = httpClient.execute(httpPost);
 
-                                formparams.add(new BasicNameValuePair(CL_DestinationUtilities.GC_Password,
-                                        userCredentials.getPassword()));
-
-                                httpClient = HttpClientBuilder.create().build();
-
-                                HttpPost httpPost = new HttpPost(url);
-
-                                // Set the request headers
-                                httpPost.addHeader("Content-Type", "application/x-www-form-urlencoded");
-                                httpPost.addHeader("Accept", "application/json");
-
-                                // Write the request body
-                                UrlEncodedFormEntity entity = new UrlEncodedFormEntity(formparams, Consts.UTF_8);
-                                if (entity != null)
+                                // verify the valid error code first
+                                int statusCode = response.getStatusLine().getStatusCode();
+                                if (statusCode != HttpStatus.OK.value())
                                 {
-
-                                    httpPost.setEntity(entity);
-
-                                    // Fire the Url
-                                    CloseableHttpResponse response = httpClient.execute(httpPost);
-
-                                    // verify the valid error code first
-                                    int statusCode = response.getStatusLine().getStatusCode();
-                                    if (statusCode != HttpStatus.OK.value())
-                                    {
-                                        log.info("Error obtaining Access Token: Http REquest failed with Status  "
-                                                + statusCode);
-                                        log.info("Error Details :  " + response.getEntity().toString());
-                                        return new ResponseEntity<>(HttpStatus.EXPECTATION_FAILED);
-                                    }
-
-                                    else
-                                    {
-                                        // Parse the JSON response
-                                        HttpEntity entityResp = response.getEntity();
-                                        String apiOutput = EntityUtils.toString(entityResp);
-
-                                        // Conerting to JSON
-                                        ObjectMapper mapper = new ObjectMapper();
-                                        JsonNode jsonNode = mapper.readTree(apiOutput);
-                                        if (jsonNode != null)
-                                        {
-                                            bearer = new TY_BearerToken();
-                                            // Get the access token
-                                            String accessToken = jsonNode.get("access_token").asText();
-                                            if (StringUtils.hasText(accessToken))
-                                            {
-                                                bearer.setAccessToken(accessToken);
-                                            }
-
-                                            if (StringUtils.hasText(String.valueOf(jsonNode.get("expires_in").asInt())))
-                                            {
-                                                bearer.setExpiresIn(jsonNode.get("expires_in").asInt());
-
-                                            }
-
-                                            if (StringUtils.hasText(jsonNode.get("scope").asText()))
-                                            {
-                                                bearer.setScope(jsonNode.get("scope").asText());
-                                            }
-                                        }
-
-                                    }
+                                    log.info("Error obtaining Access Token: Http REquest failed with Status  "
+                                            + statusCode);
+                                    log.info("Error Details :  " + response.getEntity().toString());
+                                    return new ResponseEntity<>(HttpStatus.EXPECTATION_FAILED);
                                 }
 
+                                else
+                                {
+                                    // Parse the JSON response
+                                    HttpEntity entityResp = response.getEntity();
+                                    String apiOutput = EntityUtils.toString(entityResp);
+
+                                    // Conerting to JSON
+                                    ObjectMapper mapper = new ObjectMapper();
+                                    JsonNode jsonNode = mapper.readTree(apiOutput);
+                                    if (jsonNode != null)
+                                    {
+                                        bearer = new TY_BearerToken();
+                                        // Get the access token
+                                        String accessToken = jsonNode.get("access_token").asText();
+                                        if (StringUtils.hasText(accessToken))
+                                        {
+                                            bearer.setAccessToken(accessToken);
+                                        }
+
+                                        if (StringUtils.hasText(String.valueOf(jsonNode.get("expires_in").asInt())))
+                                        {
+                                            bearer.setExpiresIn(jsonNode.get("expires_in").asInt());
+
+                                        }
+
+                                        if (StringUtils.hasText(jsonNode.get("scope").asText()))
+                                        {
+                                            bearer.setScope(jsonNode.get("scope").asText());
+                                        }
+                                    }
+
+                                }
                             }
 
                         }
 
                     }
-                }
 
-                catch (
+                }
+            }
 
-                Exception e)
-                {
-                    log.info("Error accessing Destination  " + desNameOAuthCred);
-                    log.info("Error Details :  " + e.getLocalizedMessage());
-                    return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-                }
-                finally
-                {
-                    httpClient.close();
-                }
+            catch (
+
+            Exception e)
+            {
+                log.info("Error accessing Destination  " + desNameOAuthCred);
+                log.info("Error Details :  " + e.getLocalizedMessage());
+                return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+            }
+            finally
+            {
+                httpClient.close();
             }
         }
 
