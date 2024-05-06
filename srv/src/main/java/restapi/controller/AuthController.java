@@ -339,6 +339,7 @@ public class AuthController
 
                 if (acCodeParams != null)
                 {
+                    log.info("Destination Access successful.");
                     // Create an HTTP POST request to the token endpoint
                     String url = acCodeParams.getAuthUrl();
 
@@ -377,6 +378,7 @@ public class AuthController
                             {
 
                                 httpPost.setEntity(entity);
+                                log.info("Post Payload Details");
                                 log.info(entity.toString());
 
                                 // Fire the Url
@@ -395,6 +397,7 @@ public class AuthController
                                 else
                                 {
                                     // Parse the JSON response
+                                    log.info("Bearer token call result " + statusCode);
                                     HttpEntity entityResp = response.getEntity();
                                     String apiOutput = EntityUtils.toString(entityResp);
 
