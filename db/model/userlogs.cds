@@ -20,6 +20,7 @@ entity userlog : cuid {
 @Capabilities.Deletable : false
 @Capabilities.Updatable : false
 entity apiSignUps : cuid {
+    apiKey: UUID;
     consumer  : String(200);
     signedAt  : Timestamp;
     validTill : Timestamp;
