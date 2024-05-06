@@ -36,8 +36,8 @@ public class AppSecurityConfigLocal
                                 .requestMatchers("/authorize/**").permitAll()
                                 .requestMatchers("/logs/").hasAuthority("RESTREAD")
                                 .anyRequest().denyAll())
-                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                .csrf(AbstractHttpConfigurer::disable);
+                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
+                //.csrf(AbstractHttpConfigurer::disable);
                 
         // Adjust the converter to represent your use case
         // Use MyCustomHybridTokenAuthenticationConverter when IAS and XSUAA is used
