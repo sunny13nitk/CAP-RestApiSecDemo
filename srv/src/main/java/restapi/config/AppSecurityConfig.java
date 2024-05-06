@@ -47,14 +47,14 @@ public class AppSecurityConfig
     {
         // @formatter:off
         http
-               .csrf(AbstractHttpConfigurer::disable)
-               .cors(AbstractHttpConfigurer::disable)
+
                .authorizeHttpRequests(authz ->
                            authz
                                 .requestMatchers("/authorize/**").permitAll()
                                 .requestMatchers("/logs/").hasAuthority("RESTREAD")
                                 .anyRequest().denyAll())
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .csrf(c->c.disable())
                 .oauth2ResourceServer(oauth2 -> oauth2
                         .jwt(jwt -> jwt
                                 .jwtAuthenticationConverter(new MyCustomHybridTokenAuthenticationConverter()))); 
