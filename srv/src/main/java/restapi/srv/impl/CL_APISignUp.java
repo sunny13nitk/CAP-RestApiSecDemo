@@ -41,7 +41,7 @@ public class CL_APISignUp implements IF_APISignUp
             signUpEntity.put("ID", UUID.randomUUID()); // ID
             signUpEntity.put("apiKey", UUID.randomUUID()); // API Key
             signUpEntity.put("consumer", newAPISignUp.getConsumer()); // Consumer
-            signUpEntity.put("timestamp", new Timestamp(System.currentTimeMillis())); // signedAt
+            signUpEntity.put("signedAt", new Timestamp(System.currentTimeMillis())); // signedAt
 
             SimpleDateFormat df = new SimpleDateFormat("dd/MM/yyyy");
 
