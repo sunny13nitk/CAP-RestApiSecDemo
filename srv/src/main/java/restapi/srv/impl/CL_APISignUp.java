@@ -3,22 +3,28 @@ package restapi.srv.impl;
 import java.sql.Timestamp;
 import java.text.ParsePosition;
 import java.text.SimpleDateFormat;
+import java.time.Instant;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 import java.util.UUID;
 
-import org.springframework.hateoas.EntityModel;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 
 import com.sap.cds.Result;
 import com.sap.cds.ql.Insert;
+import com.sap.cds.ql.Select;
 import com.sap.cds.ql.cqn.CqnInsert;
+import com.sap.cds.ql.cqn.CqnSelect;
 import com.sap.cds.services.persistence.PersistenceService;
 
 import cds.gen.db.userlogs.ApiSignUps;
+import cds.gen.db.userlogs.ApiSignUps_;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import restapi.exceptions.APISignUpException;
+import restapi.exceptions.InvalidAPIKeyException;
 import restapi.pojos.TY_APISignUpCreate;
 import restapi.srv.intf.IF_APISignUp;
 
@@ -79,6 +85,43 @@ public class CL_APISignUp implements IF_APISignUp
         }
 
         return signUp;
+    }
+
+    @Override
+    public boolean validateAPIKey(String apiKey) throws InvalidAPIKeyException
+    {
+        boolean isValid = false;
+        ApiSignUps signUp = null;
+        if (StringUtils.hasText(apiKey) && ps != null)
+        {
+            CqnSelect qApiKey = Select.from(ApiSignUps_.class).where(q -> q.apiKey().eq(apiKey));
+            if (qApiKey != null)
+            {
+                Optional<ApiSignUps> signupO = ps.run(qApiKey).first(ApiSignUps.class);
+                if (signupO.isPresent())
+                {
+                    signUp = signupO.get();
+
+                    // Validate signUp is Active and has Validity beyond Current Time Stamp
+                    if (signUp.getIsActive() && (signUp.getValidTill().isAfter(Instant.now())))
+                    {
+                        isValid = true;
+                    }
+                    else
+                    {
+                        throw new InvalidAPIKeyException(
+                                "Registration for API Key {} has expired or is currently Inactive. " + apiKey);
+                    }
+                }
+            }
+            else
+            {
+                throw new InvalidAPIKeyException("No Registration found for Api Key : " + apiKey);
+            }
+
+        }
+
+        return isValid;
     }
 
 }

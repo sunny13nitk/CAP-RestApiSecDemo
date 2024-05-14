@@ -12,6 +12,7 @@ import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
 import restapi.exceptions.APISignUpException;
+import restapi.exceptions.InvalidAPIKeyException;
 
 @ControllerAdvice
 public class CustomizedResponseEntityExceptionHandler extends ResponseEntityExceptionHandler
@@ -28,5 +29,18 @@ public class CustomizedResponseEntityExceptionHandler extends ResponseEntityExce
         problemDetail.setProperty("timestamp", Instant.now());
 
         return new ResponseEntity<ProblemDetail>(problemDetail, HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+    @ExceptionHandler(InvalidAPIKeyException.class)
+    public final ResponseEntity<ProblemDetail> handleInvalidAPIKeyException(Exception ex, WebRequest request)
+            throws Exception
+    {
+        ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(HttpStatus.UNAUTHORIZED, ex.getMessage());
+        problemDetail.setTitle("Not Registered for API Usage");
+        problemDetail.setType(URI.create("https://helpdocs/apiRegistration"));
+        problemDetail.setProperty("errorCategory", "Registration");
+        problemDetail.setProperty("timestamp", Instant.now());
+
+        return new ResponseEntity<ProblemDetail>(problemDetail, HttpStatus.UNAUTHORIZED);
     }
 }
