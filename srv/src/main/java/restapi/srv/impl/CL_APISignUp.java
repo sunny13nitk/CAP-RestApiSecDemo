@@ -110,13 +110,13 @@ public class CL_APISignUp implements IF_APISignUp
                     else
                     {
                         throw new InvalidAPIKeyException(
-                                "Registration for API Key {} has expired or is currently Inactive. " + apiKey);
+                                "Registration for API Key - " + apiKey + " has expired or is currently Inactive. ");
                     }
                 }
-            }
-            else
-            {
-                throw new InvalidAPIKeyException("No Registration found for Api Key : " + apiKey);
+                else
+                {
+                    throw new InvalidAPIKeyException("No Registration found for Api Key : " + apiKey);
+                }
             }
 
         }
