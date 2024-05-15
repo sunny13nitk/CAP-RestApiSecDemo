@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
+import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.http.HttpStatus;
@@ -19,7 +20,9 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.sap.cds.Result;
 import com.sap.cds.ql.Insert;
+import com.sap.cds.ql.Select;
 import com.sap.cds.ql.cqn.CqnInsert;
+import com.sap.cds.ql.cqn.CqnSelect;
 import com.sap.cds.services.persistence.PersistenceService;
 
 import cds.gen.db.userlogs.Userlog;
@@ -44,10 +47,21 @@ public class LogsController
         List<EntityModel<Userlog>> logs = null;
         List<Userlog> logsList = null;
 
-        // logsList = todoSrv.findByUsername(userName); GEt From DB
-        // If Collection bound and not null
-        logs = new ArrayList<EntityModel<Userlog>>();
-        // logs.addAll( ) //list from DB
+        CqnSelect qLogs = Select.from(logsTablePath);
+        if (qLogs != null)
+        {
+            logsList = ps.run(qLogs).listOf(Userlog.class);
+            if (CollectionUtils.isNotEmpty(logsList))
+            {
+                logs = new ArrayList<EntityModel<Userlog>>();
+                for (Userlog userlog : logsList)
+                {
+                    EntityModel<Userlog> eM = EntityModel.of(userlog);
+                    logs.add(eM);
+                }
+
+            }
+        }
 
         cM = CollectionModel.of(logs);
 
