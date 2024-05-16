@@ -135,14 +135,14 @@ public class AppSecurityConfig
     {
         return (context) ->
         {
-            if (OAuth2TokenType.ACCESS_TOKEN.equals(context.getTokenType()))
+            // if (OAuth2TokenType.ACCESS_TOKEN.equals(context.getTokenType()))
+            // {
+            context.getClaims().claims((claims) ->
             {
-                context.getClaims().claims((claims) ->
-                {
-                    claims.put("claim-1", "value-1");
-                    claims.put("claim-2", "value-2");
-                });
-            }
+                claims.put("claim-1", "value-1");
+                claims.put("claim-2", "value-2");
+            });
+            // }
         };
     }
 
