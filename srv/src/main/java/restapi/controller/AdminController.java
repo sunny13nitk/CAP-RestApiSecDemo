@@ -1,8 +1,14 @@
 package restapi.controller;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import org.apache.commons.collections4.CollectionUtils;
+import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -48,6 +54,40 @@ public class AdminController
         }
 
         return new ResponseEntity<>(apiSignUp, HttpStatus.OK);
+    }
+
+    @GetMapping("/signups")
+    public CollectionModel<EntityModel<ApiSignUps>> getAPISignUps()
+    {
+        CollectionModel<EntityModel<ApiSignUps>> cM = null;
+        List<EntityModel<ApiSignUps>> apiSignUpsEMList = null;
+        List<ApiSignUps> apiSignUpsList = null;
+
+        if (apiSignUpSrv != null)
+        {
+            apiSignUpsList = apiSignUpSrv.getAPISignUPs();
+            if (CollectionUtils.isNotEmpty(apiSignUpsList))
+            {
+                apiSignUpsEMList = new ArrayList<EntityModel<ApiSignUps>>();
+                for (ApiSignUps signUp : apiSignUpsList)
+                {
+                    if (signUp != null)
+                    {
+                        EntityModel<ApiSignUps> eM = EntityModel.of(signUp);
+                        // Add link in future for each to do
+                        // WebMvcLinkBuilder link4eachPost =
+                        // linkTo(methodOn(this.getClass()).getPosts4UserById(userId));
+                        // eM.add(link2Posts.withRel(relUserPosts));
+                        apiSignUpsEMList.add(eM);
+                    }
+
+                }
+
+                cM = CollectionModel.of(apiSignUpsEMList);
+            }
+        }
+
+        return cM;
     }
 
 }

@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,12 +19,8 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.AuthorityUtils;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.oauth2.jwt.Jwt;
-import org.springframework.security.oauth2.server.authorization.OAuth2TokenType;
-import org.springframework.security.oauth2.server.authorization.token.JwtEncodingContext;
-import org.springframework.security.oauth2.server.authorization.token.OAuth2TokenCustomizer;
 import org.springframework.security.web.SecurityFilterChain;
 
 import com.sap.cloud.security.spring.config.IdentityServicesPropertySourceFactory;
@@ -108,6 +103,7 @@ public class AppSecurityConfig
                 {
                     groupAuthorities.add(new SimpleGrantedAuthority(group.replace("IASAUTHZ_", "")));
                 }
+                groupAuthorities.add(new SimpleGrantedAuthority("role_custom1"));
             }
             return groupAuthorities;
         }
@@ -127,23 +123,6 @@ public class AppSecurityConfig
                     : groups.stream().map(SimpleGrantedAuthority::new).collect(Collectors.toList());
             return new AuthenticationToken(jwt, groupAuthorities);
         }
-    }
-
-    @Bean
-    @Profile(CL_DestinationUtilities.GC_BTPProfile)
-    public OAuth2TokenCustomizer<JwtEncodingContext> jwtTokenCustomizer()
-    {
-        return (context) ->
-        {
-            // if (OAuth2TokenType.ACCESS_TOKEN.equals(context.getTokenType()))
-            // {
-            context.getClaims().claims((claims) ->
-            {
-                claims.put("claim-1", "value-1");
-                claims.put("claim-2", "value-2");
-            });
-            // }
-        };
     }
 
 }

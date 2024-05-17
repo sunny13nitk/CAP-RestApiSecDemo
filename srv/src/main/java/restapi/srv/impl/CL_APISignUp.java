@@ -5,6 +5,7 @@ import java.text.ParsePosition;
 import java.text.SimpleDateFormat;
 import java.time.Instant;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
@@ -122,6 +123,21 @@ public class CL_APISignUp implements IF_APISignUp
         }
 
         return isValid;
+    }
+
+    @Override
+    public List<ApiSignUps> getAPISignUPs() throws APISignUpException
+    {
+        List<ApiSignUps> signUps = null;
+
+        CqnSelect qApiKey = Select.from(ApiSignUps_.class);
+        if (qApiKey != null)
+        {
+            signUps = ps.run(qApiKey).listOf(ApiSignUps.class);
+
+        }
+
+        return signUps;
     }
 
 }

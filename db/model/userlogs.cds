@@ -20,10 +20,27 @@ entity userlog : cuid {
 @Capabilities.Deletable : false
 @Capabilities.Updatable : false
 entity apiSignUps : cuid {
-    apiKey: UUID;
+    apiKey    : UUID;
     consumer  : String(200);
     signedAt  : Timestamp;
     validTill : Timestamp;
     isActive  : Boolean;
+
+}
+
+@Capabilities.Insertable: false
+@Capabilities.Deletable : false
+@Capabilities.Updatable : false
+entity srvSignUps : cuid {
+    apiKey                : UUID;
+    consumer              : String(200);
+    xsappname             : String(200);
+    clientId              : String(200);
+    sourceScopes          : String;
+    isScopeCheckMandatory : Boolean;
+    failMessage           : String;
+    signedAt              : Timestamp;
+    validTill             : Timestamp;
+    isActive              : Boolean;
 
 }
