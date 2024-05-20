@@ -10,6 +10,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 
+import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
@@ -21,9 +22,11 @@ import com.sap.cds.ql.cqn.CqnInsert;
 import com.sap.cds.ql.cqn.CqnSelect;
 import com.sap.cds.ql.cqn.CqnUpdate;
 import com.sap.cds.services.persistence.PersistenceService;
+import com.sap.cds.services.request.UserInfo;
 
 import cds.gen.db.userlogs.SrvSignUps;
 import cds.gen.db.userlogs.SrvSignUps_;
+import io.jsonwebtoken.lang.Arrays;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import restapi.exceptions.APISignUpException;
@@ -41,6 +44,10 @@ public class CL_SrvSignUp implements IF_SrvSignUp
     private final String tablePath = "db.userlogs.srvSignUps"; // Table Path - HANA
 
     private final PersistenceService ps;
+
+    private final UserInfo userInfo;
+
+    private static final String ROLE_ADMIN = "APIADMIN";
 
     @Override
     public SrvSignUps createSrvSignUP(TY_SrvSignUpCreate newSrvSignUp, String username) throws APISignUpException
@@ -165,6 +172,19 @@ public class CL_SrvSignUp implements IF_SrvSignUp
                         }
                         else
                         {
+
+                            List<String> roles = Arrays
+                                    .asList(userInfo.getRoles().toArray(new String[userInfo.getRoles().size()]));
+                            if (CollectionUtils.isNotEmpty(roles))
+                            {
+                                Optional<String> roleAdminO = roles.stream().filter(r -> r.contains(ROLE_ADMIN))
+                                        .findFirst();
+                                if (roleAdminO.isPresent())
+                                {
+                                    return signUp;
+                                }
+                            }
+
                             throw new InvalidAPIKeyException(
                                     "Registration for API Key - " + apiKey + " has expired or is currently Inactive. ");
                         }
