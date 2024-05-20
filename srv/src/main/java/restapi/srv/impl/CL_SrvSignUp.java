@@ -250,7 +250,7 @@ public class CL_SrvSignUp implements IF_SrvSignUp
                                     {
                                         log.info("# SignUp Successfully Updated - " + result.rowCount());
                                         response = result;
-                                        signUp = response.first(SrvSignUps.class).get();
+                                        srvSignUp = response.first(SrvSignUps.class).get();
                                     }
                                 }
                             }
