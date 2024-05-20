@@ -77,7 +77,7 @@ public class CL_SrvSignUp implements IF_SrvSignUp
                 signUpEntity.put("signedAt", new Timestamp(System.currentTimeMillis())); // signedAt
                 signUpEntity.put("signedBy", username); // UserName
                 signUpEntity.put("updatedAt", signUpEntity.get("signedAt")); // updatedAt
-                signUpEntity.put("upadatedBy", username); // UserName
+                signUpEntity.put("updatedBy", username); // UserName
 
                 SimpleDateFormat df = new SimpleDateFormat("dd/MM/yyyy");
 

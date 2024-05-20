@@ -51,7 +51,7 @@ public class CL_APISignUp implements IF_APISignUp
             signUpEntity.put("signedAt", new Timestamp(System.currentTimeMillis())); // signedAt
             signUpEntity.put("signedBy", username); // UserName
             signUpEntity.put("updatedAt", signUpEntity.get("signedAt")); // updatedAt
-            signUpEntity.put("upadatedBy", username); // UserName
+            signUpEntity.put("updatedBy", username); // UserName
 
             SimpleDateFormat df = new SimpleDateFormat("dd/MM/yyyy");
 
