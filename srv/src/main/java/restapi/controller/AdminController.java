@@ -122,4 +122,38 @@ public class AdminController
         return new ResponseEntity<>(apiSignUp, HttpStatus.OK);
     }
 
+    @GetMapping("/srvsignups")
+    public CollectionModel<EntityModel<SrvSignUps>> getSrvSignUps()
+    {
+        CollectionModel<EntityModel<SrvSignUps>> cM = null;
+        List<EntityModel<SrvSignUps>> apiSignUpsEMList = null;
+        List<SrvSignUps> apiSignUpsList = null;
+
+        if (apiSignUpSrv != null)
+        {
+            apiSignUpsList = srvSignUpSrv.getSrvSignUPs();
+            if (CollectionUtils.isNotEmpty(apiSignUpsList))
+            {
+                apiSignUpsEMList = new ArrayList<EntityModel<SrvSignUps>>();
+                for (SrvSignUps signUp : apiSignUpsList)
+                {
+                    if (signUp != null)
+                    {
+                        EntityModel<SrvSignUps> eM = EntityModel.of(signUp);
+                        // Add link in future for each to do
+                        // WebMvcLinkBuilder link4eachPost =
+                        // linkTo(methodOn(this.getClass()).getPosts4UserById(userId));
+                        // eM.add(link2Posts.withRel(relUserPosts));
+                        apiSignUpsEMList.add(eM);
+                    }
+
+                }
+
+                cM = CollectionModel.of(apiSignUpsEMList);
+            }
+        }
+
+        return cM;
+    }
+
 }

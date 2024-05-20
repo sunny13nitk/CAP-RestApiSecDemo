@@ -13,5 +13,5 @@ public interface IF_SrvSignUp
 
     public List<SrvSignUps> getSrvSignUPs() throws APISignUpException;
 
-    public boolean validateAPIKey(String apiKey) throws InvalidAPIKeyException;
+    public SrvSignUps getSignUpByAPIKey(String apiKey) throws InvalidAPIKeyException;
 }
