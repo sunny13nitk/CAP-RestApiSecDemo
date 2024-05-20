@@ -181,6 +181,7 @@ public class CL_SrvSignUp implements IF_SrvSignUp
                                         .findFirst();
                                 if (roleAdminO.isPresent())
                                 {
+                                    log.info("Admin User: Expired SignUp returned");
                                     return signUp;
                                 }
                             }
