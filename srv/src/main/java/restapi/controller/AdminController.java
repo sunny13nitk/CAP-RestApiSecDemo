@@ -10,6 +10,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -23,6 +24,7 @@ import lombok.extern.slf4j.Slf4j;
 import restapi.exceptions.APISignUpException;
 import restapi.pojos.TY_APISignUpCreate;
 import restapi.pojos.TY_SrvSignUpCreate;
+import restapi.pojos.TY_SrvSignUpEdit;
 import restapi.srv.intf.IF_APISignUp;
 import restapi.srv.intf.IF_SrvSignUp;
 
@@ -62,7 +64,7 @@ public class AdminController
 
         }
 
-        return new ResponseEntity<>(apiSignUp, HttpStatus.OK);
+        return new ResponseEntity<>(apiSignUp, HttpStatus.CREATED);
     }
 
     @GetMapping("/signups")
@@ -110,6 +112,33 @@ public class AdminController
             try
             {
                 SrvSignUps signUp = srvSignUpSrv.createSrvSignUP(newSrvSignUp, userInfo.getName());
+                if (signUp != null)
+                {
+                    apiSignUp = EntityModel.of(signUp);
+
+                }
+            }
+            catch (APISignUpException e)
+            {
+                throw new APISignUpException(e.getLocalizedMessage());
+            }
+
+        }
+
+        return new ResponseEntity<>(apiSignUp, HttpStatus.CREATED);
+    }
+
+    @PutMapping("/srvsignups")
+    public ResponseEntity<EntityModel<SrvSignUps>> updateSrvSignUp(@RequestBody TY_SrvSignUpEdit updSrvSignUp)
+    {
+        EntityModel<SrvSignUps> apiSignUp = null;
+
+        if (updSrvSignUp != null && srvSignUpSrv != null && userInfo != null)
+        {
+            log.info("Inside Srv SignUp Update Processing...");
+            try
+            {
+                SrvSignUps signUp = srvSignUpSrv.updateSignUp(updSrvSignUp, userInfo.getName());
                 if (signUp != null)
                 {
                     apiSignUp = EntityModel.of(signUp);

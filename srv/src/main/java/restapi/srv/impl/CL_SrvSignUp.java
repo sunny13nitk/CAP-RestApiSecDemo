@@ -16,12 +16,12 @@ import org.springframework.util.StringUtils;
 import com.sap.cds.Result;
 import com.sap.cds.ql.Insert;
 import com.sap.cds.ql.Select;
+import com.sap.cds.ql.Update;
 import com.sap.cds.ql.cqn.CqnInsert;
 import com.sap.cds.ql.cqn.CqnSelect;
+import com.sap.cds.ql.cqn.CqnUpdate;
 import com.sap.cds.services.persistence.PersistenceService;
 
-import cds.gen.db.userlogs.ApiSignUps;
-import cds.gen.db.userlogs.ApiSignUps_;
 import cds.gen.db.userlogs.SrvSignUps;
 import cds.gen.db.userlogs.SrvSignUps_;
 import lombok.RequiredArgsConstructor;
@@ -29,6 +29,7 @@ import lombok.extern.slf4j.Slf4j;
 import restapi.exceptions.APISignUpException;
 import restapi.exceptions.InvalidAPIKeyException;
 import restapi.pojos.TY_SrvSignUpCreate;
+import restapi.pojos.TY_SrvSignUpEdit;
 import restapi.srv.intf.IF_SrvSignUp;
 
 @Service
@@ -176,6 +177,104 @@ public class CL_SrvSignUp implements IF_SrvSignUp
 
             }
 
+        }
+
+        return srvSignUp;
+    }
+
+    @Override
+    public SrvSignUps updateSignUp(TY_SrvSignUpEdit signUpPayload, String username) throws InvalidAPIKeyException
+    {
+        SrvSignUps srvSignUp = null;
+        Result response = null;
+        if (signUpPayload != null)
+        {
+            if (StringUtils.hasText(signUpPayload.getApiKey()))
+            {
+                // First Get the Sign Up Using Api Key
+
+                try
+                {
+                    SrvSignUps signUp = this.getSignUpByAPIKey(signUpPayload.getApiKey());
+                    if (signUp != null)
+                    {
+                        Map<String, Object> signUpEntity = new HashMap<>();
+                        signUpEntity.put("ID", signUp.getId()); // ID
+                        signUpEntity.put("apiKey", signUp.getApiKey()); // API Key
+                        signUpEntity.put("consumer", signUp.getConsumer()); // Consumer
+                        signUpEntity.put("xsappname", signUp.getXsappname()); // Application Name
+                        signUpEntity.put("clientId", signUp.getClientId()); // Client Id
+                        signUpEntity.put("sourceScopes", signUpPayload.getSourceScopes()); // source Scopes
+                        signUpEntity.put("isScopeCheckMandatory", signUpPayload.isScopeCheckMandatory()); // source
+                                                                                                          // Scopes
+                                                                                                          // Check
+                        signUpEntity.put("failMessage", signUpPayload.getFailMessage()); // Message retun in Case of
+                                                                                         // failure
+
+                        signUpEntity.put("signedAt", signUp.getSignedAt()); // signedAt
+                        signUpEntity.put("signedBy", signUp.getSignedBy()); // UserName
+                        signUpEntity.put("updatedAt", new Timestamp(System.currentTimeMillis())); // updatedAt
+                        signUpEntity.put("updatedBy", username); // UserName
+
+                        SimpleDateFormat df = new SimpleDateFormat("dd/MM/yyyy");
+
+                        if (StringUtils.hasText(signUpPayload.getValidTo()))
+                        {
+                            Timestamp ts = new Timestamp(
+                                    ((java.util.Date) df.parse(signUpPayload.getValidTo(), new ParsePosition(0)))
+                                            .getTime());
+
+                            log.info("Valid Till : " + ts);
+
+                            signUpEntity.put("validTill", ts); // Valid To
+                        }
+                        else
+                        {
+                            signUpEntity.put("validTill", signUp.getValidTill()); // Valid To
+                        }
+
+                        signUpEntity.put("isActive", signUpPayload.isActive()); // isActive
+
+                        if (signUpEntity != null)
+                        {
+
+                            try
+                            {
+                                CqnUpdate qUpdate = Update.entity(SrvSignUps_.class).data(signUpEntity);
+                                // Insert.into(this.tablePath).entry(signUpEntity);
+                                if (qUpdate != null)
+                                {
+                                    log.info("SignUp Update Query Bound!");
+                                    Result result = ps.run(qUpdate);
+                                    if (result.list().size() > 0)
+                                    {
+                                        log.info("# SignUp Successfully Updated - " + result.rowCount());
+                                        response = result;
+                                        signUp = response.first(SrvSignUps.class).get();
+                                    }
+                                }
+                            }
+                            catch (Exception e)
+                            {
+                                throw new APISignUpException("Error during API sign up Update or API Key : "
+                                        + signUpPayload.getApiKey() + " . Details - " + e.getLocalizedMessage());
+                            }
+                        }
+
+                    }
+
+                }
+
+                catch (InvalidAPIKeyException e)
+                {
+                    throw e;
+                }
+
+            }
+            else
+            {
+                throw new InvalidAPIKeyException("No ApiKey provided!");
+            }
         }
 
         return srvSignUp;
