@@ -42,7 +42,7 @@ public class CL_SrvSignUp implements IF_SrvSignUp
     private final PersistenceService ps;
 
     @Override
-    public SrvSignUps createSrvSignUP(TY_SrvSignUpCreate newSrvSignUp) throws APISignUpException
+    public SrvSignUps createSrvSignUP(TY_SrvSignUpCreate newSrvSignUp, String username) throws APISignUpException
     {
 
         SrvSignUps signUp = null;
@@ -75,6 +75,9 @@ public class CL_SrvSignUp implements IF_SrvSignUp
                 signUpEntity.put("failMessage", newSrvSignUp.getFailMessage()); // Message retun in Case of failure
 
                 signUpEntity.put("signedAt", new Timestamp(System.currentTimeMillis())); // signedAt
+                signUpEntity.put("signedBy", username); // UserName
+                signUpEntity.put("updatedAt", signUpEntity.get("signedAt")); // updatedAt
+                signUpEntity.put("upadatedBy", username); // UserName
 
                 SimpleDateFormat df = new SimpleDateFormat("dd/MM/yyyy");
 

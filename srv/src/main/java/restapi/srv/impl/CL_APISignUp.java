@@ -38,7 +38,7 @@ public class CL_APISignUp implements IF_APISignUp
     private final String tablePath = "db.userlogs.apiSignUps"; // Table Path - HANA
 
     @Override
-    public ApiSignUps createAPISignUP(TY_APISignUpCreate newAPISignUp) throws APISignUpException
+    public ApiSignUps createAPISignUP(TY_APISignUpCreate newAPISignUp, String username) throws APISignUpException
     {
         ApiSignUps signUp = null;
         Result response = null;
@@ -49,6 +49,9 @@ public class CL_APISignUp implements IF_APISignUp
             signUpEntity.put("apiKey", UUID.randomUUID()); // API Key
             signUpEntity.put("consumer", newAPISignUp.getConsumer()); // Consumer
             signUpEntity.put("signedAt", new Timestamp(System.currentTimeMillis())); // signedAt
+            signUpEntity.put("signedBy", username); // UserName
+            signUpEntity.put("updatedAt", signUpEntity.get("signedAt")); // updatedAt
+            signUpEntity.put("upadatedBy", username); // UserName
 
             SimpleDateFormat df = new SimpleDateFormat("dd/MM/yyyy");
 

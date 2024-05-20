@@ -9,7 +9,7 @@ import restapi.pojos.TY_APISignUpCreate;
 
 public interface IF_APISignUp
 {
-    public ApiSignUps createAPISignUP(TY_APISignUpCreate newAPISignUp) throws APISignUpException;
+    public ApiSignUps createAPISignUP(TY_APISignUpCreate newAPISignUp, String username) throws APISignUpException;
 
     public List<ApiSignUps> getAPISignUPs() throws APISignUpException;
 

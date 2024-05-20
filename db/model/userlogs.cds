@@ -22,7 +22,10 @@ entity userlog : cuid {
 entity apiSignUps : cuid {
     apiKey    : UUID;
     consumer  : String(200);
+    signedBy  : String(50);
     signedAt  : Timestamp;
+    updatedAt : Timestamp;
+    updatedBy : String(50);
     validTill : Timestamp;
     isActive  : Boolean;
 
@@ -39,7 +42,10 @@ entity srvSignUps : cuid {
     sourceScopes          : String;
     isScopeCheckMandatory : Boolean;
     failMessage           : String;
+    signedBy              : String(50);
     signedAt              : Timestamp;
+    updatedAt             : Timestamp;
+    updatedBy             : String(50);
     validTill             : Timestamp;
     isActive              : Boolean;
 

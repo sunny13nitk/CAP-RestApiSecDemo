@@ -14,6 +14,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.sap.cds.services.request.UserInfo;
+
 import cds.gen.db.userlogs.ApiSignUps;
 import cds.gen.db.userlogs.SrvSignUps;
 import lombok.RequiredArgsConstructor;
@@ -35,17 +37,19 @@ public class AdminController
 
     private final IF_SrvSignUp srvSignUpSrv;
 
+    private final UserInfo userInfo;
+
     @PostMapping("/signups")
     public ResponseEntity<EntityModel<ApiSignUps>> createAPISignUp(@RequestBody TY_APISignUpCreate newAPISignUp)
     {
         EntityModel<ApiSignUps> apiSignUp = null;
 
-        if (newAPISignUp != null && apiSignUpSrv != null)
+        if (newAPISignUp != null && apiSignUpSrv != null && userInfo != null)
         {
             log.info("Inside API SignUp Processing...");
             try
             {
-                ApiSignUps signUp = apiSignUpSrv.createAPISignUP(newAPISignUp);
+                ApiSignUps signUp = apiSignUpSrv.createAPISignUP(newAPISignUp, userInfo.getName());
                 if (signUp != null)
                 {
                     apiSignUp = EntityModel.of(signUp);
@@ -100,12 +104,12 @@ public class AdminController
     {
         EntityModel<SrvSignUps> apiSignUp = null;
 
-        if (newSrvSignUp != null && srvSignUpSrv != null)
+        if (newSrvSignUp != null && srvSignUpSrv != null && userInfo != null)
         {
             log.info("Inside Srv SignUp Processing...");
             try
             {
-                SrvSignUps signUp = srvSignUpSrv.createSrvSignUP(newSrvSignUp);
+                SrvSignUps signUp = srvSignUpSrv.createSrvSignUP(newSrvSignUp, userInfo.getName());
                 if (signUp != null)
                 {
                     apiSignUp = EntityModel.of(signUp);

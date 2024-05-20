@@ -9,7 +9,7 @@ import restapi.pojos.TY_SrvSignUpCreate;
 
 public interface IF_SrvSignUp
 {
-    public SrvSignUps createSrvSignUP(TY_SrvSignUpCreate newSrvSignUp) throws APISignUpException;
+    public SrvSignUps createSrvSignUP(TY_SrvSignUpCreate newSrvSignUp, String username) throws APISignUpException;
 
     public List<SrvSignUps> getSrvSignUPs() throws APISignUpException;
 
