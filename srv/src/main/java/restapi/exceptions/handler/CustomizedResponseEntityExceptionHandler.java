@@ -12,6 +12,7 @@ import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
 import restapi.exceptions.APISignUpException;
+import restapi.exceptions.ClientBearerException;
 import restapi.exceptions.InvalidAPIKeyException;
 
 @ControllerAdvice
@@ -39,6 +40,19 @@ public class CustomizedResponseEntityExceptionHandler extends ResponseEntityExce
         problemDetail.setTitle("Not Registered for API Usage");
         problemDetail.setType(URI.create("https://helpdocs/apiRegistration"));
         problemDetail.setProperty("errorCategory", "Registration");
+        problemDetail.setProperty("timestamp", Instant.now());
+
+        return new ResponseEntity<ProblemDetail>(problemDetail, HttpStatus.UNAUTHORIZED);
+    }
+
+    @ExceptionHandler(ClientBearerException.class)
+    public final ResponseEntity<ProblemDetail> handleClientBearerException(Exception ex, WebRequest request)
+            throws Exception
+    {
+        ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(HttpStatus.UNAUTHORIZED, ex.getMessage());
+        problemDetail.setTitle("Exception getting Client Bearer token");
+        problemDetail.setType(URI.create("https://helpdocs/clientBearerException"));
+        problemDetail.setProperty("errorCategory", "Bearer Generation");
         problemDetail.setProperty("timestamp", Instant.now());
 
         return new ResponseEntity<ProblemDetail>(problemDetail, HttpStatus.UNAUTHORIZED);

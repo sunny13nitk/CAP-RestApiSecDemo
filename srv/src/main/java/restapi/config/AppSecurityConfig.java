@@ -36,6 +36,7 @@ import restapi.utilities.CL_DestinationUtilities;
 @Order(1) // needs to have higher priority than CAP security config
 @PropertySource(factory = IdentityServicesPropertySourceFactory.class, ignoreResourceNotFound = true, value =
 { "" })
+@PropertySource("classpath:application.properties")
 public class AppSecurityConfig
 {
     @Autowired
