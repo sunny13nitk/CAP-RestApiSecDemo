@@ -63,7 +63,7 @@ public class CL_CommGateway implements IF_CommGateway
     private final IF_SrvSignUp srvSignUpSrv;
 
     @Value("${rest-destination}")
-    private final String restDestination;
+    private String restDestination;
 
     @Override
     public TY_CG_CBResponse getClientBearer(TY_CG_CBPL cbPayload) throws ClientBearerException
