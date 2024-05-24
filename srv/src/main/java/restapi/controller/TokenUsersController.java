@@ -17,8 +17,10 @@ import org.apache.http.util.EntityUtils;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.StringUtils;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -27,10 +29,13 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import restapi.exceptions.ClientBearerException;
 import restapi.pojos.TY_ApplicationDetails;
 import restapi.pojos.TY_BearerToken;
+import restapi.pojos.TY_CG_CBResponse;
 import restapi.pojos.TY_TokenRequestBody;
 import restapi.pojos.TY_UserAccessCredentials;
+import restapi.srv.intf.IF_CommGateway;
 import restapi.utilities.CL_DestinationUtilities;
 
 @RestController
@@ -39,6 +44,7 @@ import restapi.utilities.CL_DestinationUtilities;
 @RequiredArgsConstructor
 public class TokenUsersController
 {
+
     private final String desNameOAuthCred = "REST_API_BEARER";
 
     @PostMapping("/")

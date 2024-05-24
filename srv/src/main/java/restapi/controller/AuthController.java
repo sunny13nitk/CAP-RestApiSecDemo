@@ -46,11 +46,14 @@ import com.sap.cloud.sdk.cloudplatform.connectivity.exception.DestinationAccessE
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import restapi.exceptions.ClientBearerException;
 import restapi.pojos.TY_ApplicationDetails;
 import restapi.pojos.TY_BearerToken;
+import restapi.pojos.TY_CG_CBResponse;
 import restapi.pojos.TY_TokenCheck;
 import restapi.pojos.TY_TokenRequestBody;
 import restapi.srv.intf.IF_APISignUp;
+import restapi.srv.intf.IF_CommGateway;
 import restapi.utilities.CL_DestinationUtilities;
 import restapi.utilities.JWTTokenUtilities;
 
@@ -66,6 +69,8 @@ public class AuthController
     private final String desNameOAuthCred = "REST_API_BEARER";
 
     private final IF_APISignUp apiSignUpSrv;
+
+    private final IF_CommGateway gatewaySrv;
 
     @GetMapping("/basic")
     public ResponseEntity<Map<String, String>> accessPublicEndpoint()
@@ -521,6 +526,24 @@ public class AuthController
         }
         return new ResponseEntity<>(tokenInfo, HttpStatus.OK);
 
+    }
+
+    @GetMapping("/bearerTokenSrv")
+    public ResponseEntity<TY_CG_CBResponse> getToken4Srv(@RequestHeader(name = "apiKey") String apiKey,
+            @RequestHeader(name = "tokenPass") String tokenPass)
+    {
+        TY_CG_CBResponse cbResponse = null;
+        if (gatewaySrv != null && StringUtils.hasText(tokenPass) && StringUtils.hasText(apiKey))
+        {
+            log.info("Gateway Service bound!!");
+        }
+        else
+        {
+            throw new ClientBearerException(
+                    "apiKey from registration and tokenPass generated from consuming app are mandatory to genererate client Bearer!");
+        }
+
+        return new ResponseEntity<>(cbResponse, HttpStatus.OK);
     }
 
     private Map<String, String> getDestinationDetails(String destinationName) throws Exception

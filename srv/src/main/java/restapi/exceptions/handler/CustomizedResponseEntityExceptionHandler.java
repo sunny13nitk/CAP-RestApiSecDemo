@@ -39,7 +39,7 @@ public class CustomizedResponseEntityExceptionHandler extends ResponseEntityExce
         ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(HttpStatus.UNAUTHORIZED, ex.getMessage());
         problemDetail.setTitle("Not Registered for API Usage");
         problemDetail.setType(URI.create("https://helpdocs/apiRegistration"));
-        problemDetail.setProperty("errorCategory", "Registration");
+        problemDetail.setProperty("errorCategory", "Invalid/ Missing Registration");
         problemDetail.setProperty("timestamp", Instant.now());
 
         return new ResponseEntity<ProblemDetail>(problemDetail, HttpStatus.UNAUTHORIZED);
