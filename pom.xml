@@ -4,11 +4,11 @@
 	<modelVersion>4.0.0</modelVersion>
 
 	<groupId>com.esm</groupId>
-	<artifactId>restapi-sec-demo-parent</artifactId>
+	<artifactId>apihub-parent</artifactId>
 	<version>${revision}</version>
 	<packaging>pom</packaging>
 
-	<name>restapi-sec-demo parent</name>
+	<name>apihub-parent</name>
 
 	<properties>
 		<!-- OUR VERSION -->
