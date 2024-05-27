@@ -5,7 +5,7 @@ applications:
   memory: 800M
   routes:
     - route: restdemo.cfapps.eu10-004.hana.ondemand.com
-  path: srv/target/restapi-sec-demo-exec.jar
+  path: srv/target/apihub-exec.jar
   buildpacks:
     - java_buildpack
   env:
