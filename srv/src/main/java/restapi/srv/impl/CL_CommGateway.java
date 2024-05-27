@@ -158,7 +158,7 @@ public class CL_CommGateway implements IF_CommGateway
                                     }
                                     catch (ClientBearerException e)
                                     {
-                                        throw new ClientBearerException(srvSignUpInfo.getFailMessage() + "Details : "
+                                        throw new ClientBearerException(srvSignUpInfo.getFailMessage() + " Details : "
                                                 + e.getLocalizedMessage());
                                     }
 
@@ -382,7 +382,7 @@ public class CL_CommGateway implements IF_CommGateway
                                         if (!scopeO.isPresent())
                                         {
                                             throw new ClientBearerException("scope  " + signUpScope
-                                                    + " could not be found in passToken Scope(s)!  Verity Registration of ApiKey : "
+                                                    + " could not be found in passToken Scope(s)!  Verify Registration of ApiKey : "
                                                     + signUp.getApiKey());
                                         }
                                     }
