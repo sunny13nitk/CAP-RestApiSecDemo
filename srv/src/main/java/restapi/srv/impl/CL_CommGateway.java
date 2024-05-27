@@ -90,9 +90,11 @@ public class CL_CommGateway implements IF_CommGateway
                 srvSignUpInfo = verifyApiKey(cbPayload.getApiKey());
                 if (srvSignUpInfo != null)
                 {
+                    log.info("apiKey Info. retrieved for Key:  " + cbPayload.getApiKey());
                     // Validate signUp is Active and has Validity beyond Current Time Stamp
                     if (srvSignUpInfo.getIsActive() && (srvSignUpInfo.getValidTill().isAfter(Instant.now())))
                     {
+                        log.info("srv sign Up Active....");
                         // Proceed
                         cbResponse = new TY_CG_CBResponse();
                         try
@@ -111,9 +113,11 @@ public class CL_CommGateway implements IF_CommGateway
                             else
                             {
                                 // Proceed
+                                log.info("pass Token verified Successfully!");
                                 cgTokenInfo = this.extractTokenInfo(cbPayload.getPassToken());
                                 if (cgTokenInfo != null)
                                 {
+                                    log.info("pass Token Extraction complete....");
                                     cgTokenInfo.setApiKey(cbPayload.getApiKey());
                                     cgTokenInfo.setRoles(cbResponse.getTokenCheck().getScopes());
 
@@ -121,6 +125,7 @@ public class CL_CommGateway implements IF_CommGateway
                                     {
                                         if (this.verifyClientSignUp(srvSignUpInfo, cgTokenInfo))
                                         {
+                                            log.info("pass Token and apiKey match complete .....");
                                             cbResponse.setSignupSuccessful(true);
 
                                             // Trigger Bearer Issue

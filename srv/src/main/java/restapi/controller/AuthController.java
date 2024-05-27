@@ -49,6 +49,7 @@ import lombok.extern.slf4j.Slf4j;
 import restapi.exceptions.ClientBearerException;
 import restapi.pojos.TY_ApplicationDetails;
 import restapi.pojos.TY_BearerToken;
+import restapi.pojos.TY_CG_CBPL;
 import restapi.pojos.TY_CG_CBResponse;
 import restapi.pojos.TY_TokenCheck;
 import restapi.pojos.TY_TokenRequestBody;
@@ -536,6 +537,10 @@ public class AuthController
         if (gatewaySrv != null && StringUtils.hasText(tokenPass) && StringUtils.hasText(apiKey))
         {
             log.info("Gateway Service bound!!");
+            TY_CG_CBPL cbPL = new TY_CG_CBPL(tokenPass, apiKey);
+
+            cbResponse = gatewaySrv.getClientBearer(cbPL);
+
         }
         else
         {
