@@ -235,6 +235,7 @@ public class CL_CommGateway implements IF_CommGateway
             JSONObject jsonPayload = new JSONObject(new String(payload));
             if (jsonPayload != null)
             {
+                tokenInfo = new TY_CG_TokenPassInfo();
                 tokenInfo.setClientId(jsonPayload.getString("client_id"));
 
                 JSONArray arrayaud = jsonPayload.getJSONArray("aud");
