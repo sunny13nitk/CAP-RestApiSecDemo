@@ -12,8 +12,8 @@
 
 	<name>restapi-sec-demo</name>
 
-	<!-- ACTUAL DEPENDENCIES -->
-	<dependencies>
+	<!-- ACTUAL DEPENDENCIES --> 
+	<dependencies> 
 		<!-- CDS SPRING BOOT STARTER -->
 		<dependency>
 			<groupId>com.sap.cds</groupId>
